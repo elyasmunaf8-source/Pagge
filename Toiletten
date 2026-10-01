@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schul-Toilettenverwaltung</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #a8edea, #fed6e3);
+  color: #222;
+}
+
+button, input, textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* LOGIN */
+
+#authScreen {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 430px;
+  padding: 30px;
+  border-radius: 28px;
+  background: rgba(255,255,255,.9);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 15px 45px rgba(0,0,0,.15);
+}
+
+.auth-card h1 {
+  text-align: center;
+  margin-top: 0;
+}
+
+.auth-card > p {
+  text-align: center;
+  color: #666;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.auth-tabs button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 13px;
+  background: #eee;
+}
+
+.auth-tabs button.active {
+  background: #667eea;
+  color: white;
+}
+
+.field {
+  margin-bottom: 15px;
+}
+
+.field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 7px;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  outline: none;
+  background: white;
+}
+
+.primary {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  background: #667eea;
+  color: white;
+  font-weight: bold;
+}
+
+.primary:hover {
+  opacity: .9;
+}
+
+.auth-message {
+  margin-top: 13px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* APP */
+
+.app {
+  max-width: 950px;
+  margin: auto;
+  padding: 18px;
+}
+
+header {
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(15px);
+  padding: 20px;
+  border-radius: 25px;
+  margin-bottom: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.1);
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+header h1 {
+  margin: 0;
+}
+
+.user-info {
+  color: #666;
+  margin-top: 5px;
+}
+
+.logout {
+  background: #ff7675;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+
+nav {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+nav button {
+  flex: 1;
+  padding: 13px;
+  border-radius: 15px;
+  background: rgba(255,255,255,.85);
+  font-weight: bold;
+}
+
+nav button.active {
+  background: #667eea;
+  color: white;
+}
+
+.card {
+  background: rgba(255,255,255,.9);
+  backdrop-filter: blur(15px);
+  border-radius: 24px;
+  padding: 22px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+.trip {
+  padding: 16px;
+  margin-top: 12px;
+  border-radius: 17px;
+  background: #f5f5f5;
+  border-left: 8px solid #2ecc71;
+}
+
+.trip.yellow {
+  border-left-color: #f1c40f;
+}
+
+.trip.red {
+  border-left-color: #e74c3c;
+}
+
+.trip.marked {
+  background: #fff0f0;
+}
+
+.trip-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.duration {
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.small-btn {
+  padding: 9px 12px;
+  border-radius: 11px;
+  color: white;
+  background: #667eea;
+}
+
+.return-btn {
+  background: #00b894;
+}
+
+.mark-btn {
+  background: #636e72;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.stat {
+  background: white;
+  border-radius: 17px;
+  padding: 17px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.log-entry,
+.incident,
+.teacher-button {
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 15px;
+  background: #f7f7f7;
+}
+
+.incident {
+  background: #fff0f0;
+  border-left: 5px solid #e74c3c;
+}
+
+.teacher-button {
+  width: 100%;
+  border: 0;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.teacher-button:hover {
+  background: #eee;
+}
+
+.teacher-button.selected {
+  border: 3px solid #667eea;
+}
+
+.search {
+  margin-bottom: 15px;
+}
+
+.search input {
+  width: 100%;
+  padding: 13px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+}
+
+@media(max-width:650px) {
+  .header-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- AUTH -->
+
+<section id="authScreen">
+
+  <div class="auth-card">
+
+    <h1>🔐 Schul-Login</h1>
+    <p>Schul-Toilettenverwaltung</p>
+
+    <div class="auth-tabs">
+
+      <button id="loginTab"
+              class="active"
+              onclick="showAuth('login')">
+        Anmelden
+      </button>
+
+      <button id="registerTab"
+              onclick="showAuth('register')">
+        Konto erstellen
+      </button>
+
+    </div>
+
+
+    <!-- LOGIN -->
+
+    <div id="loginBox">
+
+      <div class="field">
+        <label>Benutzername</label>
+        <input id="loginUsername"
+               type="text"
+               autocomplete="username"
+               placeholder="Benutzername">
+      </div>
+
+      <div class="field">
+        <label>Kennwort</label>
+        <input id="loginPassword"
+               type="password"
+               autocomplete="current-password"
+               placeholder="Kennwort">
+      </div>
+
+      <button class="primary" onclick="login()">
+        Anmelden
+      </button>
+
+    </div>
+
+
+    <!-- REGISTER -->
+
+    <div id="registerBox" class="hidden">
+
+      <div class="field">
+        <label>Vor- und Nachname</label>
+        <input id="registerName"
+               type="text"
+               placeholder="z. B. Frau Müller">
+      </div>
+
+      <div class="field">
+        <label>Benutzername</label>
+        <input id="registerUsername"
+               type="text"
+               placeholder="Benutzername">
+      </div>
+
+      <div class="field">
+        <label>Kennwort</label>
+        <input id="registerPassword"
+               type="password"
+               placeholder="Kennwort">
+      </div>
+
+      <div class="field">
+        <label>Kennwort wiederholen</label>
+        <input id="registerPassword2"
+               type="password"
+               placeholder="Kennwort wiederholen">
+      </div>
+
+      <button class="primary" onclick="createAccount()">
+        Konto erstellen
+      </button>
+
+    </div>
+
+    <div id="authMessage" class="auth-message"></div>
+
+  </div>
+
+</section>
+
+
+<!-- APP -->
+
+<div id="app" class="app hidden">
+
+<header>
+
+  <div class="header-row">
+
+    <div>
+      <h1>🚻 Schul-Toilettenverwaltung</h1>
+      <div id="userInfo" class="user-info"></div>
+    </div>
+
+    <button class="logout" onclick="logout()">
+      Abmelden
+    </button>
+
+  </div>
+
+</header>
+
+
+<!-- LEHRER NAV -->
+
+<nav id="teacherNav">
+
+  <button class="active"
+          onclick="showPage('toiletPage', this)">
+    🚻 Toilette
+  </button>
+
+  <button onclick="showPage('overviewPage', this)">
+    📋 Übersicht
+  </button>
+
+</nav>
+
+
+<!-- ADMIN NAV -->
+
+<nav id="adminNav" class="hidden">
+
+  <button class="active"
+          onclick="showPage('adminPage', this)">
+    🛠 Admin
+  </button>
+
+  <button onclick="showPage('overviewPage', this)">
+    📋 Übersicht
+  </button>
+
+</nav>
+
+
+<!-- TOILETTE -->
+
+<section id="toiletPage">
+
+  <div class="card">
+
+    <h2>📝 Toilettengang genehmigen</h2>
+
+    <div class="field">
+      <label>Lehrer</label>
+      <input id="teacherDisplay" readonly>
+    </div>
+
+    <div class="field">
+      <label>Vorname und Nachname</label>
+      <input id="studentName"
+             placeholder="Vorname Nachname">
+    </div>
+
+    <button class="primary"
+            onclick="startToilet()">
+      Toilette genehmigen
+    </button>
+
+    <p id="message"></p>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>🚶 Gerade auf der Toilette</h2>
+
+    <div id="activeList"></div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>🚨 Vorfall melden</h2>
+
+    <div class="field">
+
+      <label>Beschreibung</label>
+
+      <textarea id="incidentText"
+                rows="4"
+                placeholder="Was ist passiert?"></textarea>
+
+    </div>
+
+    <button class="primary"
+            onclick="reportIncident()">
+      Vorfall melden
+    </button>
+
+    <p id="incidentMessage"></p>
+
+  </div>
+
+</section>
+
+
+<!-- ÜBERSICHT -->
+
+<section id="overviewPage" class="hidden">
+
+  <div class="card">
+
+    <h2>📋 Meine Übersicht</h2>
+
+    <div class="field">
+
+      <label>Datum</label>
+
+      <input id="selectedDate"
+             type="date"
+             onchange="renderOverview()">
+
+    </div>
+
+
+    <div class="stats">
+
+      <div class="stat">
+        <div class="stat-number" id="statTrips">0</div>
+        Toilettengänge
+      </div>
+
+      <div class="stat">
+        <div class="stat-number" id="statStudents">0</div>
+        Schüler
+      </div>
+
+      <div class="stat">
+        <div class="stat-number" id="statMarked">0</div>
+        Markiert
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>🕒 Tagesprotokoll</h2>
+
+    <div id="logList"></div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>🚨 Gemeldete Vorfälle</h2>
+
+    <div id="incidentList"></div>
+
+  </div>
+
+</section>
+
+
+<!-- ADMIN -->
+
+<section id="adminPage" class="hidden">
+
+  <div class="card">
+
+    <h2>🛠 Admin-Bereich</h2>
+
+    <p>
+      Lehrer auswählen, um deren Protokoll einzusehen.
+    </p>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>🔎 Lehrer</h2>
+
+    <div class="search">
+
+      <input id="teacherSearch"
+             placeholder="Benutzername suchen..."
+             oninput="renderTeachers()">
+
+    </div>
+
+    <div id="teacherList"></div>
+
+  </div>
+
+
+  <div id="adminTeacherView"
+       class="card hidden">
+
+    <h2>👤 Lehrer-Protokoll</h2>
+
+    <div id="selectedTeacher"></div>
+
+    <div class="field">
+
+      <label>Datum</label>
+
+      <input id="adminDate"
+             type="date"
+             onchange="renderAdminLog()">
+
+    </div>
+
+
+    <div class="stats">
+
+      <div class="stat">
+        <div class="stat-number" id="adminTrips">0</div>
+        Toilettengänge
+      </div>
+
+      <div class="stat">
+        <div class="stat-number" id="adminStudents">0</div>
+        Schüler
+      </div>
+
+      <div class="stat">
+        <div class="stat-number" id="adminMarked">0</div>
+        Markiert
+      </div>
+
+    </div>
+
+
+    <h3>📋 Protokoll</h3>
+    <div id="adminLog"></div>
+
+
+    <h3>🚨 Vorfälle</h3>
+    <div id="adminIncidents"></div>
+
+  </div>
+
+</section>
+
+</div>
+
+
+<script>
+
+/*
+====================================================
+ VORSCHAU-LOGIN
+====================================================
+
+Diese Version speichert Konten und Daten im Browser.
+
+Für eine echte sichere Version müssen Login,
+Passwortprüfung und Datenbank auf einem Server laufen.
+====================================================
+*/
+
+
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "HBGadmin";
+
+let users =
+  JSON.parse(localStorage.getItem("school_users") || "[]");
+
+let trips =
+  JSON.parse(localStorage.getItem("school_trips") || "[]");
+
+let incidents =
+  JSON.parse(localStorage.getItem("school_incidents") || "[]");
+
+let currentUser = null;
+let selectedTeacher = null;
+
+
+/* ---------------- AUTH ---------------- */
+
+function showAuth(type) {
+
+  const loginBox =
+    document.getElementById("loginBox");
+
+  const registerBox =
+    document.getElementById("registerBox");
+
+  const loginTab =
+    document.getElementById("loginTab");
+
+  const registerTab =
+    document.getElementById("registerTab");
+
+  document.getElementById("authMessage").textContent = "";
+
+  if (type === "login") {
+
+    loginBox.classList.remove("hidden");
+    registerBox.classList.add("hidden");
+
+    loginTab.classList.add("active");
+    registerTab.classList.remove("active");
+
+  } else {
+
+    loginBox.classList.add("hidden");
+    registerBox.classList.remove("hidden");
+
+    loginTab.classList.remove("active");
+    registerTab.classList.add("active");
+
+  }
+}
+
+
+/* KONTO ERSTELLEN */
+
+function createAccount() {
+
+  const name =
+    document.getElementById("registerName").value.trim();
+
+  const username =
+    document.getElementById("registerUsername").value.trim();
+
+  const password =
+    document.getElementById("registerPassword").value;
+
+  const password2 =
+    document.getElementById("registerPassword2").value;
+
+  const message =
+    document.getElementById("authMessage");
+
+
+  if (!name || !username || !password) {
+
+    message.textContent =
+      "Bitte alle Felder ausfüllen.";
+
+    return;
+  }
+
+
+  if (username.toLowerCase() === ADMIN_USERNAME) {
+
+    message.textContent =
+      "Dieser Benutzername ist reserviert.";
+
+    return;
+  }
+
+
+  if (password.length < 6) {
+
+    message.textContent =
+      "Das Kennwort muss mindestens 6 Zeichen haben.";
+
+    return;
+  }
+
+
+  if (password !== password2) {
+
+    message.textContent =
+      "Die Kennwörter stimmen nicht überein.";
+
+    return;
+  }
+
+
+  const exists =
+    users.some(
+      u =>
+        u.username.toLowerCase() ===
+        username.toLowerCase()
+    );
+
+
+  if (exists) {
+
+    message.textContent =
+      "Dieser Benutzername existiert bereits.";
+
+    return;
+  }
+
+
+  users.push({
+
+    id: crypto.randomUUID
+      ? crypto.randomUUID()
+      : String(Date.now()),
+
+    name: name,
+
+    username: username,
+
+    password: password,
+
+    role: "teacher"
+
+  });
+
+
+  saveUsers();
+
+
+  document.getElementById("registerName").value = "";
+  document.getElementById("registerUsername").value = "";
+  document.getElementById("registerPassword").value = "";
+  document.getElementById("registerPassword2").value = "";
+
+
+  message.textContent =
+    "Konto wurde erstellt. Du kannst dich jetzt anmelden.";
+
+  showAuth("login");
+}
+
+
+/* LOGIN */
+
+function login() {
+
+  const username =
+    document.getElementById("loginUsername").value.trim();
+
+  const password =
+    document.getElementById("loginPassword").value;
+
+  const message =
+    document.getElementById("authMessage");
+
+
+  /* ADMIN */
+
+  if (
+    username === ADMIN_USERNAME &&
+    password === ADMIN_PASSWORD
+  ) {
+
+    currentUser = {
+
+      username: ADMIN_USERNAME,
+
+      name: "Administrator",
+
+      role: "admin"
+
+    };
+
+    openApp();
+
+    return;
+  }
+
+
+  /* LEHRER */
+
+  const user =
+    users.find(
+      u =>
+        u.username === username &&
+        u.password === password
+    );
+
+
+  if (!user) {
+
+    message.textContent =
+      "Benutzername oder Kennwort ist falsch.";
+
+    return;
+  }
+
+
+  currentUser = {
+
+    username: user.username,
+
+    name: user.name,
+
+    role: "teacher"
+
+  };
+
+
+  openApp();
+}
+
+
+/* APP ÖFFNEN */
+
+function openApp() {
+
+  document
+    .getElementById("authScreen")
+    .classList.add("hidden");
+
+  document
+    .getElementById("app")
+    .classList.remove("hidden");
+
+
+  document.getElementById("userInfo").textContent =
+    currentUser.name +
+    " • @" +
+    currentUser.username;
+
+
+  if (currentUser.role === "admin") {
+
+    document
+      .getElementById("teacherNav")
+      .classList.add("hidden");
+
+    document
+      .getElementById("adminNav")
+      .classList.remove("hidden");
+
+    showPage("adminPage");
+
+    setDates();
+
+    renderTeachers();
+
+  } else {
+
+    document
+      .getElementById("teacherNav")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("adminNav")
+      .classList.add("hidden");
+
+    document.getElementById("teacherDisplay").value =
+      currentUser.name;
+
+    setDates();
+
+    showPage("toiletPage");
+
+    render();
+
+  }
+}
+
+
+/* LOGOUT */
+
+function logout() {
+
+  currentUser = null;
+  selectedTeacher = null;
+
+  document
+    .getElementById("app")
+    .classList.add("hidden");
+
+  document
+    .getElementById("authScreen")
+    .classList.remove("hidden");
+
+  document.getElementById("loginUsername").value = "";
+  document.getElementById("loginPassword").value = "";
+  document.getElementById("authMessage").textContent = "";
+
+  showAuth("login");
+}
+
+
+/* ---------------- SEITEN ---------------- */
+
+function showPage(id, button) {
+
+  [
+    "toiletPage",
+    "overviewPage",
+    "adminPage"
+  ].forEach(page => {
+
+    document
+      .getElementById(page)
+      .classList.add("hidden");
+
+  });
+
+
+  document
+    .getElementById(id)
+    .classList.remove("hidden");
+
+
+  if (button) {
+
+    button.parentElement
+      .querySelectorAll("button")
+      .forEach(b => b.classList.remove("active"));
+
+    button.classList.add("active");
+
+  }
+
+
+  if (id === "overviewPage") {
+    renderOverview();
+  }
+
+  if (id === "adminPage") {
+    renderTeachers();
+  }
+}
+
+
+/* ---------------- DATUM ---------------- */
+
+function getDate() {
+
+  return new Date()
+    .toISOString()
+    .split("T")[0];
+
+}
+
+
+function getTime() {
+
+  return new Date()
+    .toLocaleTimeString(
+      "de-DE",
+      {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      }
+    );
+
+}
+
+
+function setDates() {
+
+  const date = getDate();
+
+  document.getElementById("selectedDate").value =
+    date;
+
+  document.getElementById("adminDate").value =
+    date;
+}
+
+
+/* ---------------- TOILETTE ---------------- */
+
+function startToilet() {
+
+  if (!currentUser ||
+      currentUser.role !== "teacher") {
+    return;
+  }
+
+
+  const input =
+    document.getElementById("studentName");
+
+  const name =
+    input.value.trim();
+
+
+  if (!name) {
+
+    document.getElementById("message").textContent =
+      "Bitte Vorname und Nachname eingeben.";
+
+    return;
+  }
+
+
+  const now = Date.now();
+
+
+  trips.push({
+
+    id:
+      crypto.randomUUID
+        ? crypto.randomUUID()
+        : String(now),
+
+    owner:
+      currentUser.username,
+
+    teacher:
+      currentUser.name,
+
+    student:
+      name,
+
+    date:
+      getDate(),
+
+    startTime:
+      getTime(),
+
+    startTimestamp:
+      now,
+
+    endTime:
+      null,
+
+    endTimestamp:
+      null,
+
+    marked:
+      false
+
+  });
+
+
+  saveTrips();
+
+  input.value = "";
+
+  document.getElementById("message").textContent =
+    "Toilettengang wurde genehmigt.";
+
+  render();
+}
+
+
+/* ZURÜCKGEKOMMEN */
+
+function finishTrip(id) {
+
+  const trip =
+    trips.find(t => t.id === id);
+
+  if (!trip) return;
+
+  trip.endTimestamp = Date.now();
+  trip.endTime = getTime();
+
+  saveTrips();
+
+  render();
+}
+
+
+/* MARKIEREN */
+
+function toggleMarked(id) {
+
+  const trip =
+    trips.find(t => t.id === id);
+
+  if (!trip) return;
+
+  trip.marked = !trip.marked;
+
+  saveTrips();
+
+  render();
+}
+
+
+/* DAUER */
+
+function getMinutes(trip) {
+
+  const end =
+    trip.endTimestamp || Date.now();
+
+  return Math.floor(
+    (end - trip.startTimestamp) / 60000
+  );
+
+}
+
+
+function getTripClass(minutes) {
+
+  if (minutes <= 4) return "";
+  if (minutes <= 6) return "yellow";
+
+  return "red";
+}
+
+
+/* AKTIVE TRIPS */
+
+function render() {
+
+  if (!currentUser ||
+      currentUser.role !== "teacher") {
+    return;
+  }
+
+
+  const active =
+    trips.filter(
+      t =>
+        t.owner === currentUser.username &&
+        !t.endTimestamp
+    );
+
+
+  const list =
+    document.getElementById("activeList");
+
+
+  if (active.length === 0) {
+
+    list.innerHTML =
+      "<p>Momentan ist niemand auf der Toilette.</p>";
+
+    return;
+  }
+
+
+  list.innerHTML =
+    active.map(trip => {
+
+      const minutes =
+        getMinutes(trip);
+
+      return `
+
+        <div class="trip
+          ${getTripClass(minutes)}
+          ${trip.marked ? "marked" : ""}">
+
+          <div class="trip-top">
+
+            <strong>
+              ${escapeHTML(trip.student)}
+            </strong>
+
+            <span class="duration">
+              ${minutes} Min.
+            </span>
+
+          </div>
+
+          <div>
+            Seit ${trip.startTime}
+          </div>
+
+          <div class="actions">
+
+            <button
+              class="small-btn return-btn"
+              onclick="finishTrip('${trip.id}')">
+              ✓ Zurückgekommen
+            </button>
+
+            <button
+              class="small-btn mark-btn"
+              onclick="toggleMarked('${trip.id}')">
+
+              ${trip.marked
+                ? "✓ Markierung entfernen"
+                : "⚠ Zur Überprüfung markieren"}
+
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+/* ---------------- VORFÄLLE ---------------- */
+
+function reportIncident() {
+
+  if (!currentUser ||
+      currentUser.role !== "teacher") {
+    return;
+  }
+
+
+  const input =
+    document.getElementById("incidentText");
+
+  const text =
+    input.value.trim();
+
+
+  if (!text) {
+
+    document.getElementById(
+      "incidentMessage"
+    ).textContent =
+      "Bitte eine Beschreibung eingeben.";
+
+    return;
+  }
+
+
+  incidents.push({
+
+    id:
+      crypto.randomUUID
+        ? crypto.randomUUID()
+        : String(Date.now()),
+
+    owner:
+      currentUser.username,
+
+    teacher:
+      currentUser.name,
+
+    date:
+      getDate(),
+
+    time:
+      getTime(),
+
+    text:
+      text
+
+  });
+
+
+  saveIncidents();
+
+  input.value = "";
+
+  document.getElementById(
+    "incidentMessage"
+  ).textContent =
+    "Vorfall wurde gespeichert.";
+
+}
+
+
+/* ---------------- LEHRER-ÜBERSICHT ---------------- */
+
+function renderOverview() {
+
+  if (!currentUser ||
+      currentUser.role !== "teacher") {
+    return;
+  }
+
+
+  const date =
+    document.getElementById("selectedDate").value;
+
+
+  const ownTrips =
+    trips.filter(
+      t =>
+        t.owner === currentUser.username &&
+        t.date === date
+    );
+
+
+  const ownIncidents =
+    incidents.filter(
+      i =>
+        i.owner === currentUser.username &&
+        i.date === date
+    );
+
+
+  document.getElementById("statTrips").textContent =
+    ownTrips.length;
+
+
+  document.getElementById("statStudents").textContent =
+    new Set(
+      ownTrips.map(t => t.student)
+    ).size;
+
+
+  document.getElementById("statMarked").textContent =
+    ownTrips.filter(t => t.marked).length;
+
+
+  const log =
+    document.getElementById("logList");
+
+
+  if (!ownTrips.length) {
+
+    log.innerHTML =
+      "<p>Keine Einträge für diesen Tag.</p>";
+
+  } else {
+
+    log.innerHTML =
+      ownTrips
+        .slice()
+        .reverse()
+        .map(t => `
+
+          <div class="log-entry">
+
+            <strong>
+              ${escapeHTML(t.student)}
+            </strong>
+
+            <br>
+
+            ${t.startTime}
+            →
+            ${t.endTime || "noch unterwegs"}
+
+            ${
+              t.marked
+                ? "<br>⚠ Zur Überprüfung markiert"
+                : ""
+            }
+
+          </div>
+
+        `)
+        .join("");
+
+  }
+
+
+  const incidentList =
+    document.getElementById("incidentList");
+
+
+  if (!ownIncidents.length) {
+
+    incidentList.innerHTML =
+      "<p>Keine Vorfälle für diesen Tag.</p>";
+
+  } else {
+
+    incidentList.innerHTML =
+      ownIncidents
+        .slice()
+        .reverse()
+        .map(i => `
+
+          <div class="incident">
+
+            <strong>${i.time}</strong>
+
+            <br>
+
+            ${escapeHTML(i.text)}
+
+          </div>
+
+        `)
+        .join("");
+
+  }
+
+}
+
+
+/* ---------------- ADMIN ---------------- */
+
+function renderTeachers() {
+
+  if (!currentUser ||
+      currentUser.role !== "admin") {
+    return;
+  }
+
+
+  const search =
+    document
+      .getElementById("teacherSearch")
+      .value
+      .toLowerCase()
+      .trim();
+
+
+  const filtered =
+    users.filter(
+      user =>
+        user.username
+          .toLowerCase()
+          .includes(search)
+        ||
+        user.name
+          .toLowerCase()
+          .includes(search)
+    );
+
+
+  const list =
+    document.getElementById("teacherList");
+
+
+  if (!filtered.length) {
+
+    list.innerHTML =
+      "<p>Kein Lehrer gefunden.</p>";
+
+    return;
+  }
+
+
+  list.innerHTML =
+    filtered.map(user => `
+
+      <button
+        class="teacher-button
+          ${selectedTeacher === user.username
+            ? "selected"
+            : ""}"
+        onclick="selectTeacher('${escapeAttribute(user.username)}')">
+
+        <span>
+
+          👤 <strong>
+            ${escapeHTML(user.name)}
+          </strong>
+
+          <br>
+
+          <small>
+            @${escapeHTML(user.username)}
+          </small>
+
+        </span>
+
+        <span>›</span>
+
+      </button>
+
+    `).join("");
+
+}
+
+
+/* LEHRER AUSWÄHLEN */
+
+function selectTeacher(username) {
+
+  selectedTeacher = username;
+
+  document
+    .getElementById("adminTeacherView")
+    .classList.remove("hidden");
+
+
+  const user =
+    users.find(
+      u => u.username === username
+    );
+
+
+  document.getElementById(
+    "selectedTeacher"
+  ).innerHTML = `
+
+    <p>
+      <strong>
+        ${escapeHTML(user.name)}
+      </strong>
+
+      · @${escapeHTML(user.username)}
+    </p>
+
+  `;
+
+
+  renderTeachers();
+
+  renderAdminLog();
+
+}
+
+
+/* ADMIN-PROTOKOLL */
+
+function renderAdminLog() {
+
+  if (!selectedTeacher) return;
+
+
+  const date =
+    document.getElementById("adminDate").value;
+
+
+  const teacherTrips =
+    trips.filter(
+      t =>
+        t.owner === selectedTeacher &&
+        t.date === date
+    );
+
+
+  const teacherIncidents =
+    incidents.filter(
+      i =>
+        i.owner === selectedTeacher &&
+        i.date === date
+    );
+
+
+  document.getElementById("adminTrips").textContent =
+    teacherTrips.length;
+
+
+  document.getElementById("adminStudents").textContent =
+    new Set(
+      teacherTrips.map(t => t.student)
+    ).size;
+
+
+  document.getElementById("adminMarked").textContent =
+    teacherTrips.filter(t => t.marked).length;
+
+
+  const log =
+    document.getElementById("adminLog");
+
+
+  if (!teacherTrips.length) {
+
+    log.innerHTML =
+      "<p>Keine Einträge für diesen Tag.</p>";
+
+  } else {
+
+    log.innerHTML =
+      teacherTrips
+        .slice()
+        .reverse()
+        .map(t => `
+
+          <div class="log-entry">
+
+            <strong>
+              ${escapeHTML(t.student)}
+            </strong>
+
+            <br>
+
+            ${t.startTime}
+            →
+            ${t.endTime || "noch unterwegs"}
+
+            ${
+              t.marked
+                ? "<br>⚠ Zur Überprüfung markiert"
+                : ""
+            }
+
+          </div>
+
+        `)
+        .join("");
+
+  }
+
+
+  const incidentList =
+    document.getElementById("adminIncidents");
+
+
+  if (!teacherIncidents.length) {
+
+    incidentList.innerHTML =
+      "<p>Keine Vorfälle für diesen Tag.</p>";
+
+  } else {
+
+    incidentList.innerHTML =
+      teacherIncidents
+        .slice()
+        .reverse()
+        .map(i => `
+
+          <div class="incident">
+
+            <strong>${i.time}</strong>
+
+            <br>
+
+            ${escapeHTML(i.text)}
+
+          </div>
+
+        `)
+        .join("");
+
+  }
+
+}
+
+
+/* ---------------- SPEICHERN ---------------- */
+
+function saveUsers() {
+
+  localStorage.setItem(
+    "school_users",
+    JSON.stringify(users)
+  );
+
+}
+
+
+function saveTrips() {
+
+  localStorage.setItem(
+    "school_trips",
+    JSON.stringify(trips)
+  );
+
+}
+
+
+function saveIncidents() {
+
+  localStorage.setItem(
+    "school_incidents",
+    JSON.stringify(incidents)
+  );
+
+}
+
+
+/* ---------------- SICHERES AUSGEBEN ---------------- */
+
+function escapeHTML(value) {
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+}
+
+
+function escapeAttribute(value) {
+
+  return String(value)
+    .replaceAll("\\", "\\\\")
+    .replaceAll("'", "\\'");
+
+}
+
+
+/* AKTIVE ZEITEN AKTUALISIEREN */
+
+setInterval(() => {
+
+  if (
+    currentUser &&
+    currentUser.role === "teacher"
+  ) {
+
+    render();
+
+  }
+
+}, 1000);
+
+</script>
+
+</body>
+</html>
