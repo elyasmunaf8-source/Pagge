@@ -1,714 +1,160 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Schul-Toilettenverwaltung</title>
-
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #a8edea, #fed6e3);
-  color: #222;
-}
-
-button, input, textarea {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-  border: 0;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* LOGIN */
-
-#authScreen {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.auth-card {
-  width: 100%;
-  max-width: 430px;
-  padding: 30px;
-  border-radius: 28px;
-  background: rgba(255,255,255,.9);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 15px 45px rgba(0,0,0,.15);
-}
-
-.auth-card h1 {
-  text-align: center;
-  margin-top: 0;
-}
-
-.auth-card > p {
-  text-align: center;
-  color: #666;
-}
-
-.auth-tabs {
-  display: flex;
-  gap: 8px;
-  margin: 20px 0;
-}
-
-.auth-tabs button {
-  flex: 1;
-  padding: 12px;
-  border-radius: 13px;
-  background: #eee;
-}
-
-.auth-tabs button.active {
-  background: #667eea;
-  color: white;
-}
-
-.field {
-  margin-bottom: 15px;
-}
-
-.field label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 7px;
-}
-
-.field input,
-.field textarea {
-  width: 100%;
-  padding: 13px;
-  border: 1px solid #ddd;
-  border-radius: 14px;
-  outline: none;
-  background: white;
-}
-
-.primary {
-  width: 100%;
-  padding: 14px;
-  border-radius: 14px;
-  background: #667eea;
-  color: white;
-  font-weight: bold;
-}
-
-.primary:hover {
-  opacity: .9;
-}
-
-.auth-message {
-  margin-top: 13px;
-  text-align: center;
-  font-size: 14px;
-}
-
-/* APP */
-
-.app {
-  max-width: 950px;
-  margin: auto;
-  padding: 18px;
-}
-
-header {
-  background: rgba(255,255,255,.88);
-  backdrop-filter: blur(15px);
-  padding: 20px;
-  border-radius: 25px;
-  margin-bottom: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.1);
-}
-
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-}
-
-header h1 {
-  margin: 0;
-}
-
-.user-info {
-  color: #666;
-  margin-top: 5px;
-}
-
-.logout {
-  background: #ff7675;
-  color: white;
-  padding: 10px 14px;
-  border-radius: 12px;
-}
-
-nav {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-nav button {
-  flex: 1;
-  padding: 13px;
-  border-radius: 15px;
-  background: rgba(255,255,255,.85);
-  font-weight: bold;
-}
-
-nav button.active {
-  background: #667eea;
-  color: white;
-}
-
-.card {
-  background: rgba(255,255,255,.9);
-  backdrop-filter: blur(15px);
-  border-radius: 24px;
-  padding: 22px;
-  margin-bottom: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.08);
-}
-
-.card h2 {
-  margin-top: 0;
-}
-
-.trip {
-  padding: 16px;
-  margin-top: 12px;
-  border-radius: 17px;
-  background: #f5f5f5;
-  border-left: 8px solid #2ecc71;
-}
-
-.trip.yellow {
-  border-left-color: #f1c40f;
-}
-
-.trip.red {
-  border-left-color: #e74c3c;
-}
-
-.trip.marked {
-  background: #fff0f0;
-}
-
-.trip-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.duration {
-  font-weight: bold;
-}
-
-.actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 12px;
-}
-
-.small-btn {
-  padding: 9px 12px;
-  border-radius: 11px;
-  color: white;
-  background: #667eea;
-}
-
-.return-btn {
-  background: #00b894;
-}
-
-.mark-btn {
-  background: #636e72;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-
-.stat {
-  background: white;
-  border-radius: 17px;
-  padding: 17px;
-  text-align: center;
-}
-
-.stat-number {
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.log-entry,
-.incident,
-.teacher-button {
-  margin-top: 10px;
-  padding: 14px;
-  border-radius: 15px;
-  background: #f7f7f7;
-}
-
-.incident {
-  background: #fff0f0;
-  border-left: 5px solid #e74c3c;
-}
-
-.teacher-button {
-  width: 100%;
-  border: 0;
-  text-align: left;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.teacher-button:hover {
-  background: #eee;
-}
-
-.teacher-button.selected {
-  border: 3px solid #667eea;
-}
-
-.search {
-  margin-bottom: 15px;
-}
-
-.search input {
-  width: 100%;
-  padding: 13px;
-  border-radius: 14px;
-  border: 1px solid #ddd;
-}
-
-@media(max-width:650px) {
-  .header-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .stats {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<!-- AUTH -->
-
-<section id="authScreen">
-
-  <div class="auth-card">
-
-    <h1>🔐 Schul-Login</h1>
-    <p>Schul-Toilettenverwaltung</p>
-
-    <div class="auth-tabs">
-
-      <button id="loginTab"
-              class="active"
-              onclick="showAuth('login')">
-        Anmelden
-      </button>
-
-      <button id="registerTab"
-              onclick="showAuth('register')">
-        Konto erstellen
-      </button>
-
-    </div>
-
-
-    <!-- LOGIN -->
-
-    <div id="loginBox">
-
-      <div class="field">
-        <label>Benutzername</label>
-        <input id="loginUsername"
-               type="text"
-               autocomplete="username"
-               placeholder="Benutzername">
-      </div>
-
-      <div class="field">
-        <label>Kennwort</label>
-        <input id="loginPassword"
-               type="password"
-               autocomplete="current-password"
-               placeholder="Kennwort">
-      </div>
-
-      <button class="primary" onclick="login()">
-        Anmelden
-      </button>
-
-    </div>
-
-
-    <!-- REGISTER -->
-
-    <div id="registerBox" class="hidden">
-
-      <div class="field">
-        <label>Vor- und Nachname</label>
-        <input id="registerName"
-               type="text"
-               placeholder="z. B. Frau Müller">
-      </div>
-
-      <div class="field">
-        <label>Benutzername</label>
-        <input id="registerUsername"
-               type="text"
-               placeholder="Benutzername">
-      </div>
-
-      <div class="field">
-        <label>Kennwort</label>
-        <input id="registerPassword"
-               type="password"
-               placeholder="Kennwort">
-      </div>
-
-      <div class="field">
-        <label>Kennwort wiederholen</label>
-        <input id="registerPassword2"
-               type="password"
-               placeholder="Kennwort wiederholen">
-      </div>
-
-      <button class="primary" onclick="createAccount()">
-        Konto erstellen
-      </button>
-
-    </div>
-
-    <div id="authMessage" class="auth-message"></div>
-
-  </div>
-
-</section>
-
-
-<!-- APP -->
-
-<div id="app" class="app hidden">
-
-<header>
-
-  <div class="header-row">
-
-    <div>
-      <h1>🚻 Schul-Toilettenverwaltung</h1>
-      <div id="userInfo" class="user-info"></div>
-    </div>
-
-    <button class="logout" onclick="logout()">
-      Abmelden
-    </button>
-
-  </div>
-
-</header>
-
-
-<!-- LEHRER NAV -->
-
-<nav id="teacherNav">
-
-  <button class="active"
-          onclick="showPage('toiletPage', this)">
-    🚻 Toilette
-  </button>
-
-  <button onclick="showPage('overviewPage', this)">
-    📋 Übersicht
-  </button>
-
-</nav>
-
-
-<!-- ADMIN NAV -->
-
-<nav id="adminNav" class="hidden">
-
-  <button class="active"
-          onclick="showPage('adminPage', this)">
-    🛠 Admin
-  </button>
-
-  <button onclick="showPage('overviewPage', this)">
-    📋 Übersicht
-  </button>
-
-</nav>
-
-
-<!-- TOILETTE -->
-
-<section id="toiletPage">
-
-  <div class="card">
-
-    <h2>📝 Toilettengang genehmigen</h2>
-
-    <div class="field">
-      <label>Lehrer</label>
-      <input id="teacherDisplay" readonly>
-    </div>
-
-    <div class="field">
-      <label>Vorname und Nachname</label>
-      <input id="studentName"
-             placeholder="Vorname Nachname">
-    </div>
-
-    <button class="primary"
-            onclick="startToilet()">
-      Toilette genehmigen
-    </button>
-
-    <p id="message"></p>
-
-  </div>
-
-
-  <div class="card">
-
-    <h2>🚶 Gerade auf der Toilette</h2>
-
-    <div id="activeList"></div>
-
-  </div>
-
-
-  <div class="card">
-
-    <h2>🚨 Vorfall melden</h2>
-
-    <div class="field">
-
-      <label>Beschreibung</label>
-
-      <textarea id="incidentText"
-                rows="4"
-                placeholder="Was ist passiert?"></textarea>
-
-    </div>
-
-    <button class="primary"
-            onclick="reportIncident()">
-      Vorfall melden
-    </button>
-
-    <p id="incidentMessage"></p>
-
-  </div>
-
-</section>
-
-
-<!-- ÜBERSICHT -->
-
-<section id="overviewPage" class="hidden">
-
-  <div class="card">
-
-    <h2>📋 Meine Übersicht</h2>
-
-    <div class="field">
-
-      <label>Datum</label>
-
-      <input id="selectedDate"
-             type="date"
-             onchange="renderOverview()">
-
-    </div>
-
-
-    <div class="stats">
-
-      <div class="stat">
-        <div class="stat-number" id="statTrips">0</div>
-        Toilettengänge
-      </div>
-
-      <div class="stat">
-        <div class="stat-number" id="statStudents">0</div>
-        Schüler
-      </div>
-
-      <div class="stat">
-        <div class="stat-number" id="statMarked">0</div>
-        Markiert
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <h2>🕒 Tagesprotokoll</h2>
-
-    <div id="logList"></div>
-
-  </div>
-
-
-  <div class="card">
-
-    <h2>🚨 Gemeldete Vorfälle</h2>
-
-    <div id="incidentList"></div>
-
-  </div>
-
-</section>
-
-
-<!-- ADMIN -->
-
-<section id="adminPage" class="hidden">
-
-  <div class="card">
-
-    <h2>🛠 Admin-Bereich</h2>
-
-    <p>
-      Lehrer auswählen, um deren Protokoll einzusehen.
-    </p>
-
-  </div>
-
-
-  <div class="card">
-
-    <h2>🔎 Lehrer</h2>
-
-    <div class="search">
-
-      <input id="teacherSearch"
-             placeholder="Benutzername suchen..."
-             oninput="renderTeachers()">
-
-    </div>
-
-    <div id="teacherList"></div>
-
-  </div>
-
-
-  <div id="adminTeacherView"
-       class="card hidden">
-
-    <h2>👤 Lehrer-Protokoll</h2>
-
-    <div id="selectedTeacher"></div>
-
-    <div class="field">
-
-      <label>Datum</label>
-
-      <input id="adminDate"
-             type="date"
-             onchange="renderAdminLog()">
-
-    </div>
-
-
-    <div class="stats">
-
-      <div class="stat">
-        <div class="stat-number" id="adminTrips">0</div>
-        Toilettengänge
-      </div>
-
-      <div class="stat">
-        <div class="stat-number" id="adminStudents">0</div>
-        Schüler
-      </div>
-
-      <div class="stat">
-        <div class="stat-number" id="adminMarked">0</div>
-        Markiert
-      </div>
-
-    </div>
-
-
-    <h3>📋 Protokoll</h3>
-    <div id="adminLog"></div>
-
-
-    <h3>🚨 Vorfälle</h3>
-    <div id="adminIncidents"></div>
-
-  </div>
-
-</section>
-
-</div>
-
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 
-/*
-====================================================
- VORSCHAU-LOGIN
-====================================================
+/* =====================================================
+   SUPABASE EINSTELLUNGEN
+   ===================================================== */
 
-Diese Version speichert Konten und Daten im Browser.
+const SUPABASE_URL =
+  "https://afxlawmbcthmxuyssy.h.supabase.co";
 
-Für eine echte sichere Version müssen Login,
-Passwortprüfung und Datenbank auf einem Server laufen.
-====================================================
-*/
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_ap8DdhjQ6hxG3Suy81WHzQ_L7aGdxdt";
+
+const FUNCTION_URL =
+  SUPABASE_URL + "/functions/v1/dynamic-processor";
 
 
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "HBGadmin";
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
 
-let users =
-  JSON.parse(localStorage.getItem("school_users") || "[]");
 
-let trips =
-  JSON.parse(localStorage.getItem("school_trips") || "[]");
-
-let incidents =
-  JSON.parse(localStorage.getItem("school_incidents") || "[]");
+/* =====================================================
+   APP
+   ===================================================== */
 
 let currentUser = null;
 let selectedTeacher = null;
 
 
-/* ---------------- AUTH ---------------- */
+/* =====================================================
+   HILFSFUNKTIONEN
+   ===================================================== */
+
+function escapeHTML(value) {
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+}
+
+
+function escapeAttribute(value) {
+
+  return String(value)
+    .replaceAll("\\", "\\\\")
+    .replaceAll("'", "\\'");
+
+}
+
+
+function getDate() {
+
+  const now = new Date();
+
+  const year = now.getFullYear();
+  const month =
+    String(now.getMonth() + 1).padStart(2, "0");
+  const day =
+    String(now.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+
+}
+
+
+function getTime() {
+
+  return new Date().toLocaleTimeString(
+    "de-DE",
+    {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    }
+  );
+
+}
+
+
+function getMinutes(trip) {
+
+  const start =
+    new Date(trip.started_at).getTime();
+
+  const end =
+    trip.ended_at
+      ? new Date(trip.ended_at).getTime()
+      : Date.now();
+
+  return Math.floor(
+    (end - start) / 60000
+  );
+
+}
+
+
+function getTripClass(minutes) {
+
+  if (minutes <= 4) return "";
+  if (minutes <= 6) return "yellow";
+
+  return "red";
+}
+
+
+/* =====================================================
+   AUTH-FUNCTION
+   ===================================================== */
+
+async function callAuthFunction(body) {
+
+  const response =
+    await fetch(
+      FUNCTION_URL,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_PUBLISHABLE_KEY
+        },
+
+        body: JSON.stringify(body)
+      }
+    );
+
+
+  const data =
+    await response.json();
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      data.error ||
+      "Die Anmeldung konnte nicht durchgeführt werden."
+    );
+
+  }
+
+
+  return data;
+}
+
+
+/* =====================================================
+   LOGIN / REGISTRIERUNG
+   ===================================================== */
 
 function showAuth(type) {
 
@@ -724,7 +170,10 @@ function showAuth(type) {
   const registerTab =
     document.getElementById("registerTab");
 
-  document.getElementById("authMessage").textContent = "";
+  document.getElementById(
+    "authMessage"
+  ).textContent = "";
+
 
   if (type === "login") {
 
@@ -743,27 +192,38 @@ function showAuth(type) {
     registerTab.classList.add("active");
 
   }
+
 }
 
 
 /* KONTO ERSTELLEN */
 
-function createAccount() {
+async function createAccount() {
 
   const name =
-    document.getElementById("registerName").value.trim();
+    document.getElementById(
+      "registerName"
+    ).value.trim();
 
   const username =
-    document.getElementById("registerUsername").value.trim();
+    document.getElementById(
+      "registerUsername"
+    ).value.trim().toLowerCase();
 
   const password =
-    document.getElementById("registerPassword").value;
+    document.getElementById(
+      "registerPassword"
+    ).value;
 
   const password2 =
-    document.getElementById("registerPassword2").value;
+    document.getElementById(
+      "registerPassword2"
+    ).value;
 
   const message =
-    document.getElementById("authMessage");
+    document.getElementById(
+      "authMessage"
+    );
 
 
   if (!name || !username || !password) {
@@ -775,7 +235,7 @@ function createAccount() {
   }
 
 
-  if (username.toLowerCase() === ADMIN_USERNAME) {
+  if (username === "admin") {
 
     message.textContent =
       "Dieser Benutzername ist reserviert.";
@@ -784,10 +244,10 @@ function createAccount() {
   }
 
 
-  if (password.length < 6) {
+  if (password.length < 8) {
 
     message.textContent =
-      "Das Kennwort muss mindestens 6 Zeichen haben.";
+      "Das Kennwort muss mindestens 8 Zeichen haben.";
 
     return;
   }
@@ -802,130 +262,227 @@ function createAccount() {
   }
 
 
-  const exists =
-    users.some(
-      u =>
-        u.username.toLowerCase() ===
-        username.toLowerCase()
-    );
+  message.textContent =
+    "Konto wird erstellt...";
 
 
-  if (exists) {
+  try {
+
+    await callAuthFunction({
+
+      action: "register",
+
+      name: name,
+
+      username: username,
+
+      password: password
+
+    });
+
+
+    document.getElementById(
+      "registerName"
+    ).value = "";
+
+    document.getElementById(
+      "registerUsername"
+    ).value = "";
+
+    document.getElementById(
+      "registerPassword"
+    ).value = "";
+
+    document.getElementById(
+      "registerPassword2"
+    ).value = "";
+
+
+    showAuth("login");
+
+    document.getElementById(
+      "authMessage"
+    ).textContent =
+      "Konto wurde erstellt. Du kannst dich jetzt anmelden.";
+
+  } catch (error) {
 
     message.textContent =
-      "Dieser Benutzername existiert bereits.";
+      error.message;
 
-    return;
   }
 
-
-  users.push({
-
-    id: crypto.randomUUID
-      ? crypto.randomUUID()
-      : String(Date.now()),
-
-    name: name,
-
-    username: username,
-
-    password: password,
-
-    role: "teacher"
-
-  });
-
-
-  saveUsers();
-
-
-  document.getElementById("registerName").value = "";
-  document.getElementById("registerUsername").value = "";
-  document.getElementById("registerPassword").value = "";
-  document.getElementById("registerPassword2").value = "";
-
-
-  message.textContent =
-    "Konto wurde erstellt. Du kannst dich jetzt anmelden.";
-
-  showAuth("login");
 }
 
 
 /* LOGIN */
 
-function login() {
+async function login() {
 
   const username =
-    document.getElementById("loginUsername").value.trim();
+    document.getElementById(
+      "loginUsername"
+    ).value.trim().toLowerCase();
 
   const password =
-    document.getElementById("loginPassword").value;
+    document.getElementById(
+      "loginPassword"
+    ).value;
 
   const message =
-    document.getElementById("authMessage");
+    document.getElementById(
+      "authMessage"
+    );
 
 
-  /* ADMIN */
+  if (!username || !password) {
 
-  if (
-    username === ADMIN_USERNAME &&
-    password === ADMIN_PASSWORD
-  ) {
-
-    currentUser = {
-
-      username: ADMIN_USERNAME,
-
-      name: "Administrator",
-
-      role: "admin"
-
-    };
-
-    openApp();
+    message.textContent =
+      "Bitte Benutzername und Kennwort eingeben.";
 
     return;
   }
 
 
-  /* LEHRER */
+  message.textContent =
+    "Anmeldung läuft...";
 
-  const user =
-    users.find(
-      u =>
-        u.username === username &&
-        u.password === password
-    );
+
+  try {
+
+    const data =
+      await callAuthFunction({
+
+        action: "login",
+
+        username: username,
+
+        password: password
+
+      });
+
+
+    if (!data.access_token ||
+        !data.refresh_token) {
+
+      throw new Error(
+        "Keine gültige Sitzung erhalten."
+      );
+
+    }
+
+
+    const sessionResult =
+      await supabaseClient.auth.setSession({
+
+        access_token:
+          data.access_token,
+
+        refresh_token:
+          data.refresh_token
+
+      });
+
+
+    if (sessionResult.error) {
+
+      throw sessionResult.error;
+
+    }
+
+
+    await loadCurrentUser();
+
+
+    if (!currentUser) {
+
+      throw new Error(
+        "Das Benutzerprofil konnte nicht geladen werden."
+      );
+
+    }
+
+
+    openApp();
+
+  } catch (error) {
+
+    console.error(error);
+
+    message.textContent =
+      error.message ||
+      "Benutzername oder Kennwort ist falsch.";
+
+  }
+
+}
+
+
+/* AKTUELLEN BENUTZER LADEN */
+
+async function loadCurrentUser() {
+
+  const {
+    data: {
+      user
+    }
+  } =
+    await supabaseClient.auth.getUser();
 
 
   if (!user) {
 
-    message.textContent =
-      "Benutzername oder Kennwort ist falsch.";
+    currentUser = null;
 
     return;
+
+  }
+
+
+  const {
+    data: profile,
+    error
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select(
+        "id,name,username,role"
+      )
+      .eq("id", user.id)
+      .single();
+
+
+  if (error) {
+
+    console.error(error);
+
+    currentUser = null;
+
+    return;
+
   }
 
 
   currentUser = {
 
-    username: user.username,
+    id: profile.id,
 
-    name: user.name,
+    name: profile.name,
 
-    role: "teacher"
+    username: profile.username,
+
+    role: profile.role
 
   };
 
-
-  openApp();
 }
 
 
-/* APP ÖFFNEN */
+/* =====================================================
+   APP ÖFFNEN
+   ===================================================== */
 
-function openApp() {
+async function openApp() {
 
   document
     .getElementById("authScreen")
@@ -936,7 +493,9 @@ function openApp() {
     .classList.remove("hidden");
 
 
-  document.getElementById("userInfo").textContent =
+  document.getElementById(
+    "userInfo"
+  ).textContent =
     currentUser.name +
     " • @" +
     currentUser.username;
@@ -956,7 +515,7 @@ function openApp() {
 
     setDates();
 
-    renderTeachers();
+    await renderTeachers();
 
   } else {
 
@@ -968,25 +527,31 @@ function openApp() {
       .getElementById("adminNav")
       .classList.add("hidden");
 
-    document.getElementById("teacherDisplay").value =
+    document.getElementById(
+      "teacherDisplay"
+    ).value =
       currentUser.name;
 
     setDates();
 
     showPage("toiletPage");
 
-    render();
+    await render();
 
   }
+
 }
 
 
 /* LOGOUT */
 
-function logout() {
+async function logout() {
+
+  await supabaseClient.auth.signOut();
 
   currentUser = null;
   selectedTeacher = null;
+
 
   document
     .getElementById("app")
@@ -996,15 +561,28 @@ function logout() {
     .getElementById("authScreen")
     .classList.remove("hidden");
 
-  document.getElementById("loginUsername").value = "";
-  document.getElementById("loginPassword").value = "";
-  document.getElementById("authMessage").textContent = "";
+
+  document.getElementById(
+    "loginUsername"
+  ).value = "";
+
+  document.getElementById(
+    "loginPassword"
+  ).value = "";
+
+  document.getElementById(
+    "authMessage"
+  ).textContent = "";
+
 
   showAuth("login");
+
 }
 
 
-/* ---------------- SEITEN ---------------- */
+/* =====================================================
+   SEITEN
+   ===================================================== */
 
 function showPage(id, button) {
 
@@ -1030,7 +608,9 @@ function showPage(id, button) {
 
     button.parentElement
       .querySelectorAll("button")
-      .forEach(b => b.classList.remove("active"));
+      .forEach(
+        b => b.classList.remove("active")
+      );
 
     button.classList.add("active");
 
@@ -1038,65 +618,60 @@ function showPage(id, button) {
 
 
   if (id === "overviewPage") {
+
     renderOverview();
+
   }
+
 
   if (id === "adminPage") {
+
     renderTeachers();
+
   }
-}
-
-
-/* ---------------- DATUM ---------------- */
-
-function getDate() {
-
-  return new Date()
-    .toISOString()
-    .split("T")[0];
 
 }
 
 
-function getTime() {
-
-  return new Date()
-    .toLocaleTimeString(
-      "de-DE",
-      {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-      }
-    );
-
-}
-
+/* =====================================================
+   DATUM
+   ===================================================== */
 
 function setDates() {
 
   const date = getDate();
 
-  document.getElementById("selectedDate").value =
-    date;
 
-  document.getElementById("adminDate").value =
-    date;
+  document.getElementById(
+    "selectedDate"
+  ).value = date;
+
+
+  document.getElementById(
+    "adminDate"
+  ).value = date;
+
 }
 
 
-/* ---------------- TOILETTE ---------------- */
+/* =====================================================
+   TOILETTENGANG STARTEN
+   ===================================================== */
 
-function startToilet() {
+async function startToilet() {
 
   if (!currentUser ||
       currentUser.role !== "teacher") {
+
     return;
+
   }
 
 
   const input =
-    document.getElementById("studentName");
+    document.getElementById(
+      "studentName"
+    );
 
   const name =
     input.value.trim();
@@ -1104,158 +679,264 @@ function startToilet() {
 
   if (!name) {
 
-    document.getElementById("message").textContent =
+    document.getElementById(
+      "message"
+    ).textContent =
       "Bitte Vorname und Nachname eingeben.";
 
     return;
+
   }
 
 
-  const now = Date.now();
-
-
-  trips.push({
-
-    id:
-      crypto.randomUUID
-        ? crypto.randomUUID()
-        : String(now),
-
-    owner:
-      currentUser.username,
-
-    teacher:
-      currentUser.name,
-
-    student:
-      name,
-
-    date:
-      getDate(),
-
-    startTime:
-      getTime(),
-
-    startTimestamp:
-      now,
-
-    endTime:
-      null,
-
-    endTimestamp:
-      null,
-
-    marked:
-      false
-
-  });
-
-
-  saveTrips();
-
-  input.value = "";
-
-  document.getElementById("message").textContent =
-    "Toilettengang wurde genehmigt.";
-
-  render();
-}
-
-
-/* ZURÜCKGEKOMMEN */
-
-function finishTrip(id) {
-
-  const trip =
-    trips.find(t => t.id === id);
-
-  if (!trip) return;
-
-  trip.endTimestamp = Date.now();
-  trip.endTime = getTime();
-
-  saveTrips();
-
-  render();
-}
-
-
-/* MARKIEREN */
-
-function toggleMarked(id) {
-
-  const trip =
-    trips.find(t => t.id === id);
-
-  if (!trip) return;
-
-  trip.marked = !trip.marked;
-
-  saveTrips();
-
-  render();
-}
-
-
-/* DAUER */
-
-function getMinutes(trip) {
-
-  const end =
-    trip.endTimestamp || Date.now();
-
-  return Math.floor(
-    (end - trip.startTimestamp) / 60000
-  );
-
-}
-
-
-function getTripClass(minutes) {
-
-  if (minutes <= 4) return "";
-  if (minutes <= 6) return "yellow";
-
-  return "red";
-}
-
-
-/* AKTIVE TRIPS */
-
-function render() {
-
-  if (!currentUser ||
-      currentUser.role !== "teacher") {
-    return;
-  }
-
-
-  const active =
-    trips.filter(
-      t =>
-        t.owner === currentUser.username &&
-        !t.endTimestamp
+  const button =
+    document.querySelector(
+      "#toiletPage .primary"
     );
 
 
+  button.disabled = true;
+
+  button.textContent =
+    "Wird gespeichert...";
+
+
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("toilet_trips")
+        .insert({
+
+          user_id:
+            currentUser.id,
+
+          student_name:
+            name,
+
+          started_at:
+            new Date().toISOString(),
+
+          marked:
+            false
+
+        });
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    input.value = "";
+
+    document.getElementById(
+      "message"
+    ).textContent =
+      "Toilettengang wurde genehmigt.";
+
+
+    await render();
+
+  } catch (error) {
+
+    console.error(error);
+
+    document.getElementById(
+      "message"
+    ).textContent =
+      "Fehler beim Speichern: " +
+      error.message;
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "Toilette genehmigen";
+
+  }
+
+}
+
+
+/* =====================================================
+   ZURÜCKGEKOMMEN
+   ===================================================== */
+
+async function finishTrip(id) {
+
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("toilet_trips")
+        .update({
+
+          ended_at:
+            new Date().toISOString()
+
+        })
+        .eq("id", id)
+        .eq("user_id", currentUser.id);
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    await render();
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+}
+
+
+/* =====================================================
+   MARKIEREN
+   ===================================================== */
+
+async function toggleMarked(id) {
+
+  try {
+
+    const {
+      data: trip,
+      error: readError
+    } =
+      await supabaseClient
+        .from("toilet_trips")
+        .select("marked")
+        .eq("id", id)
+        .eq("user_id", currentUser.id)
+        .single();
+
+
+    if (readError) {
+
+      throw readError;
+
+    }
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("toilet_trips")
+        .update({
+
+          marked:
+            !trip.marked
+
+        })
+        .eq("id", id)
+        .eq("user_id", currentUser.id);
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    await render();
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+}
+
+
+/* =====================================================
+   AKTIVE TRIPS
+   ===================================================== */
+
+async function render() {
+
+  if (!currentUser ||
+      currentUser.role !== "teacher") {
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("toilet_trips")
+      .select("*")
+      .eq("user_id", currentUser.id)
+      .is("ended_at", null)
+      .order("started_at", {
+        ascending: true
+      });
+
+
+  if (error) {
+
+    console.error(error);
+
+    return;
+
+  }
+
+
   const list =
-    document.getElementById("activeList");
+    document.getElementById(
+      "activeList"
+    );
 
 
-  if (active.length === 0) {
+  if (!data || data.length === 0) {
 
     list.innerHTML =
       "<p>Momentan ist niemand auf der Toilette.</p>";
 
     return;
+
   }
 
 
   list.innerHTML =
-    active.map(trip => {
+    data.map(trip => {
 
       const minutes =
         getMinutes(trip);
+
+
+      const start =
+        new Date(
+          trip.started_at
+        ).toLocaleTimeString(
+          "de-DE",
+          {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+          }
+        );
+
 
       return `
 
@@ -1266,7 +947,9 @@ function render() {
           <div class="trip-top">
 
             <strong>
-              ${escapeHTML(trip.student)}
+              ${escapeHTML(
+                trip.student_name
+              )}
             </strong>
 
             <span class="duration">
@@ -1276,7 +959,7 @@ function render() {
           </div>
 
           <div>
-            Seit ${trip.startTime}
+            Seit ${start}
           </div>
 
           <div class="actions">
@@ -1291,9 +974,11 @@ function render() {
               class="small-btn mark-btn"
               onclick="toggleMarked('${trip.id}')">
 
-              ${trip.marked
-                ? "✓ Markierung entfernen"
-                : "⚠ Zur Überprüfung markieren"}
+              ${
+                trip.marked
+                  ? "✓ Markierung entfernen"
+                  : "⚠ Zur Überprüfung markieren"
+              }
 
             </button>
 
@@ -1308,18 +993,24 @@ function render() {
 }
 
 
-/* ---------------- VORFÄLLE ---------------- */
+/* =====================================================
+   VORFALL MELDEN
+   ===================================================== */
 
-function reportIncident() {
+async function reportIncident() {
 
   if (!currentUser ||
       currentUser.role !== "teacher") {
+
     return;
+
   }
 
 
   const input =
-    document.getElementById("incidentText");
+    document.getElementById(
+      "incidentText"
+    );
 
   const text =
     input.value.trim();
@@ -1333,92 +1024,171 @@ function reportIncident() {
       "Bitte eine Beschreibung eingeben.";
 
     return;
+
   }
 
 
-  incidents.push({
+  try {
 
-    id:
-      crypto.randomUUID
-        ? crypto.randomUUID()
-        : String(Date.now()),
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("incidents")
+        .insert({
 
-    owner:
-      currentUser.username,
+          user_id:
+            currentUser.id,
 
-    teacher:
-      currentUser.name,
+          description:
+            text,
 
-    date:
-      getDate(),
+          incident_time:
+            new Date().toISOString()
 
-    time:
-      getTime(),
-
-    text:
-      text
-
-  });
+        });
 
 
-  saveIncidents();
+    if (error) {
 
-  input.value = "";
+      throw error;
 
-  document.getElementById(
-    "incidentMessage"
-  ).textContent =
-    "Vorfall wurde gespeichert.";
+    }
+
+
+    input.value = "";
+
+    document.getElementById(
+      "incidentMessage"
+    ).textContent =
+      "Vorfall wurde gespeichert.";
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    document.getElementById(
+      "incidentMessage"
+    ).textContent =
+      "Fehler beim Speichern: " +
+      error.message;
+
+  }
 
 }
 
 
-/* ---------------- LEHRER-ÜBERSICHT ---------------- */
+/* =====================================================
+   LEHRER-ÜBERSICHT
+   ===================================================== */
 
-function renderOverview() {
+async function renderOverview() {
 
   if (!currentUser ||
       currentUser.role !== "teacher") {
+
     return;
+
   }
 
 
   const date =
-    document.getElementById("selectedDate").value;
+    document.getElementById(
+      "selectedDate"
+    ).value;
+
+
+  const start =
+    `${date}T00:00:00`;
+
+  const end =
+    `${date}T23:59:59.999`;
+
+
+  const {
+    data: tripsData,
+    error: tripsError
+  } =
+    await supabaseClient
+      .from("toilet_trips")
+      .select("*")
+      .eq("user_id", currentUser.id)
+      .gte("started_at", start)
+      .lte("started_at", end)
+      .order("started_at", {
+        ascending: false
+      });
+
+
+  if (tripsError) {
+
+    console.error(tripsError);
+
+    return;
+
+  }
+
+
+  const {
+    data: incidentsData,
+    error: incidentsError
+  } =
+    await supabaseClient
+      .from("incidents")
+      .select("*")
+      .eq("user_id", currentUser.id)
+      .gte("incident_time", start)
+      .lte("incident_time", end)
+      .order("incident_time", {
+        ascending: false
+      });
+
+
+  if (incidentsError) {
+
+    console.error(incidentsError);
+
+    return;
+
+  }
 
 
   const ownTrips =
-    trips.filter(
-      t =>
-        t.owner === currentUser.username &&
-        t.date === date
-    );
-
+    tripsData || [];
 
   const ownIncidents =
-    incidents.filter(
-      i =>
-        i.owner === currentUser.username &&
-        i.date === date
-    );
+    incidentsData || [];
 
 
-  document.getElementById("statTrips").textContent =
+  document.getElementById(
+    "statTrips"
+  ).textContent =
     ownTrips.length;
 
 
-  document.getElementById("statStudents").textContent =
+  document.getElementById(
+    "statStudents"
+  ).textContent =
     new Set(
-      ownTrips.map(t => t.student)
+      ownTrips.map(
+        t => t.student_name
+      )
     ).size;
 
 
-  document.getElementById("statMarked").textContent =
-    ownTrips.filter(t => t.marked).length;
+  document.getElementById(
+    "statMarked"
+  ).textContent =
+    ownTrips.filter(
+      t => t.marked
+    ).length;
 
 
   const log =
-    document.getElementById("logList");
+    document.getElementById(
+      "logList"
+    );
 
 
   if (!ownTrips.length) {
@@ -1429,22 +1199,51 @@ function renderOverview() {
   } else {
 
     log.innerHTML =
-      ownTrips
-        .slice()
-        .reverse()
-        .map(t => `
+      ownTrips.map(t => {
+
+        const startTime =
+          new Date(
+            t.started_at
+          ).toLocaleTimeString(
+            "de-DE",
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit"
+            }
+          );
+
+
+        const endTime =
+          t.ended_at
+            ? new Date(
+                t.ended_at
+              ).toLocaleTimeString(
+                "de-DE",
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit"
+                }
+              )
+            : "noch unterwegs";
+
+
+        return `
 
           <div class="log-entry">
 
             <strong>
-              ${escapeHTML(t.student)}
+              ${escapeHTML(
+                t.student_name
+              )}
             </strong>
 
             <br>
 
-            ${t.startTime}
+            ${startTime}
             →
-            ${t.endTime || "noch unterwegs"}
+            ${endTime}
 
             ${
               t.marked
@@ -1454,14 +1253,17 @@ function renderOverview() {
 
           </div>
 
-        `)
-        .join("");
+        `;
+
+      }).join("");
 
   }
 
 
   const incidentList =
-    document.getElementById("incidentList");
+    document.getElementById(
+      "incidentList"
+    );
 
 
   if (!ownIncidents.length) {
@@ -1472,49 +1274,94 @@ function renderOverview() {
   } else {
 
     incidentList.innerHTML =
-      ownIncidents
-        .slice()
-        .reverse()
-        .map(i => `
+      ownIncidents.map(i => {
+
+        const time =
+          new Date(
+            i.incident_time
+          ).toLocaleTimeString(
+            "de-DE",
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit"
+            }
+          );
+
+
+        return `
 
           <div class="incident">
 
-            <strong>${i.time}</strong>
+            <strong>
+              ${time}
+            </strong>
 
             <br>
 
-            ${escapeHTML(i.text)}
+            ${escapeHTML(
+              i.description
+            )}
 
           </div>
 
-        `)
-        .join("");
+        `;
+
+      }).join("");
 
   }
 
 }
 
 
-/* ---------------- ADMIN ---------------- */
+/* =====================================================
+   ADMIN – LEHRER LADEN
+   ===================================================== */
 
-function renderTeachers() {
+async function renderTeachers() {
 
   if (!currentUser ||
       currentUser.role !== "admin") {
+
     return;
+
   }
 
 
   const search =
     document
-      .getElementById("teacherSearch")
+      .getElementById(
+        "teacherSearch"
+      )
       .value
       .toLowerCase()
       .trim();
 
 
+  const {
+    data: teachers,
+    error
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select(
+        "id,name,username,role"
+      )
+      .eq("role", "teacher")
+      .order("name");
+
+
+  if (error) {
+
+    console.error(error);
+
+    return;
+
+  }
+
+
   const filtered =
-    users.filter(
+    (teachers || []).filter(
       user =>
         user.username
           .toLowerCase()
@@ -1527,7 +1374,9 @@ function renderTeachers() {
 
 
   const list =
-    document.getElementById("teacherList");
+    document.getElementById(
+      "teacherList"
+    );
 
 
   if (!filtered.length) {
@@ -1536,6 +1385,7 @@ function renderTeachers() {
       "<p>Kein Lehrer gefunden.</p>";
 
     return;
+
   }
 
 
@@ -1544,21 +1394,33 @@ function renderTeachers() {
 
       <button
         class="teacher-button
-          ${selectedTeacher === user.username
-            ? "selected"
-            : ""}"
-        onclick="selectTeacher('${escapeAttribute(user.username)}')">
+          ${
+            selectedTeacher === user.username
+              ? "selected"
+              : ""
+          }"
+        onclick="
+          selectTeacher(
+            '${escapeAttribute(
+              user.username
+            )}'
+          )
+        ">
 
         <span>
 
           👤 <strong>
-            ${escapeHTML(user.name)}
+            ${escapeHTML(
+              user.name
+            )}
           </strong>
 
           <br>
 
           <small>
-            @${escapeHTML(user.username)}
+            @${escapeHTML(
+              user.username
+            )}
           </small>
 
         </span>
@@ -1572,21 +1434,43 @@ function renderTeachers() {
 }
 
 
-/* LEHRER AUSWÄHLEN */
+/* =====================================================
+   ADMIN – LEHRER AUSWÄHLEN
+   ===================================================== */
 
-function selectTeacher(username) {
+async function selectTeacher(username) {
 
-  selectedTeacher = username;
+  selectedTeacher =
+    username;
+
 
   document
-    .getElementById("adminTeacherView")
+    .getElementById(
+      "adminTeacherView"
+    )
     .classList.remove("hidden");
 
 
-  const user =
-    users.find(
-      u => u.username === username
-    );
+  const {
+    data: user,
+    error
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select(
+        "id,name,username,role"
+      )
+      .eq("username", username)
+      .single();
+
+
+  if (error) {
+
+    console.error(error);
+
+    return;
+
+  }
 
 
   document.getElementById(
@@ -1594,66 +1478,154 @@ function selectTeacher(username) {
   ).innerHTML = `
 
     <p>
+
       <strong>
-        ${escapeHTML(user.name)}
+        ${escapeHTML(
+          user.name
+        )}
       </strong>
 
-      · @${escapeHTML(user.username)}
+      · @${escapeHTML(
+        user.username
+      )}
+
     </p>
 
   `;
 
 
-  renderTeachers();
+  await renderTeachers();
 
-  renderAdminLog();
+  await renderAdminLog();
 
 }
 
 
-/* ADMIN-PROTOKOLL */
+/* =====================================================
+   ADMIN – PROTOKOLL
+   ===================================================== */
 
-function renderAdminLog() {
+async function renderAdminLog() {
 
   if (!selectedTeacher) return;
 
 
   const date =
-    document.getElementById("adminDate").value;
+    document.getElementById(
+      "adminDate"
+    ).value;
+
+
+  const start =
+    `${date}T00:00:00`;
+
+  const end =
+    `${date}T23:59:59.999`;
+
+
+  const {
+    data: teacher,
+    error: teacherError
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select("id,name,username")
+      .eq("username", selectedTeacher)
+      .single();
+
+
+  if (teacherError) {
+
+    console.error(teacherError);
+
+    return;
+
+  }
+
+
+  const {
+    data: tripsData,
+    error: tripsError
+  } =
+    await supabaseClient
+      .from("toilet_trips")
+      .select("*")
+      .eq("user_id", teacher.id)
+      .gte("started_at", start)
+      .lte("started_at", end)
+      .order("started_at", {
+        ascending: false
+      });
+
+
+  if (tripsError) {
+
+    console.error(tripsError);
+
+    return;
+
+  }
+
+
+  const {
+    data: incidentsData,
+    error: incidentsError
+  } =
+    await supabaseClient
+      .from("incidents")
+      .select("*")
+      .eq("user_id", teacher.id)
+      .gte("incident_time", start)
+      .lte("incident_time", end)
+      .order("incident_time", {
+        ascending: false
+      });
+
+
+  if (incidentsError) {
+
+    console.error(incidentsError);
+
+    return;
+
+  }
 
 
   const teacherTrips =
-    trips.filter(
-      t =>
-        t.owner === selectedTeacher &&
-        t.date === date
-    );
-
+    tripsData || [];
 
   const teacherIncidents =
-    incidents.filter(
-      i =>
-        i.owner === selectedTeacher &&
-        i.date === date
-    );
+    incidentsData || [];
 
 
-  document.getElementById("adminTrips").textContent =
+  document.getElementById(
+    "adminTrips"
+  ).textContent =
     teacherTrips.length;
 
 
-  document.getElementById("adminStudents").textContent =
+  document.getElementById(
+    "adminStudents"
+  ).textContent =
     new Set(
-      teacherTrips.map(t => t.student)
+      teacherTrips.map(
+        t => t.student_name
+      )
     ).size;
 
 
-  document.getElementById("adminMarked").textContent =
-    teacherTrips.filter(t => t.marked).length;
+  document.getElementById(
+    "adminMarked"
+  ).textContent =
+    teacherTrips.filter(
+      t => t.marked
+    ).length;
 
 
   const log =
-    document.getElementById("adminLog");
+    document.getElementById(
+      "adminLog"
+    );
 
 
   if (!teacherTrips.length) {
@@ -1664,22 +1636,51 @@ function renderAdminLog() {
   } else {
 
     log.innerHTML =
-      teacherTrips
-        .slice()
-        .reverse()
-        .map(t => `
+      teacherTrips.map(t => {
+
+        const startTime =
+          new Date(
+            t.started_at
+          ).toLocaleTimeString(
+            "de-DE",
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit"
+            }
+          );
+
+
+        const endTime =
+          t.ended_at
+            ? new Date(
+                t.ended_at
+              ).toLocaleTimeString(
+                "de-DE",
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit"
+                }
+              )
+            : "noch unterwegs";
+
+
+        return `
 
           <div class="log-entry">
 
             <strong>
-              ${escapeHTML(t.student)}
+              ${escapeHTML(
+                t.student_name
+              )}
             </strong>
 
             <br>
 
-            ${t.startTime}
+            ${startTime}
             →
-            ${t.endTime || "noch unterwegs"}
+            ${endTime}
 
             ${
               t.marked
@@ -1689,14 +1690,17 @@ function renderAdminLog() {
 
           </div>
 
-        `)
-        .join("");
+        `;
+
+      }).join("");
 
   }
 
 
   const incidentList =
-    document.getElementById("adminIncidents");
+    document.getElementById(
+      "adminIncidents"
+    );
 
 
   if (!teacherIncidents.length) {
@@ -1707,85 +1711,49 @@ function renderAdminLog() {
   } else {
 
     incidentList.innerHTML =
-      teacherIncidents
-        .slice()
-        .reverse()
-        .map(i => `
+      teacherIncidents.map(i => {
+
+        const time =
+          new Date(
+            i.incident_time
+          ).toLocaleTimeString(
+            "de-DE",
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit"
+            }
+          );
+
+
+        return `
 
           <div class="incident">
 
-            <strong>${i.time}</strong>
+            <strong>
+              ${time}
+            </strong>
 
             <br>
 
-            ${escapeHTML(i.text)}
+            ${escapeHTML(
+              i.description
+            )}
 
           </div>
 
-        `)
-        .join("");
+        `;
+
+      }).join("");
 
   }
 
 }
 
 
-/* ---------------- SPEICHERN ---------------- */
-
-function saveUsers() {
-
-  localStorage.setItem(
-    "school_users",
-    JSON.stringify(users)
-  );
-
-}
-
-
-function saveTrips() {
-
-  localStorage.setItem(
-    "school_trips",
-    JSON.stringify(trips)
-  );
-
-}
-
-
-function saveIncidents() {
-
-  localStorage.setItem(
-    "school_incidents",
-    JSON.stringify(incidents)
-  );
-
-}
-
-
-/* ---------------- SICHERES AUSGEBEN ---------------- */
-
-function escapeHTML(value) {
-
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-
-}
-
-
-function escapeAttribute(value) {
-
-  return String(value)
-    .replaceAll("\\", "\\\\")
-    .replaceAll("'", "\\'");
-
-}
-
-
-/* AKTIVE ZEITEN AKTUALISIEREN */
+/* =====================================================
+   AUTOMATISCH AKTUALISIEREN
+   ===================================================== */
 
 setInterval(() => {
 
@@ -1800,7 +1768,33 @@ setInterval(() => {
 
 }, 1000);
 
-</script>
 
-</body>
-</html>
+/* =====================================================
+   BEIM LADEN VORHANDENE SITZUNG PRÜFEN
+   ===================================================== */
+
+(async function init() {
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient.auth.getSession();
+
+
+  if (session) {
+
+    await loadCurrentUser();
+
+    if (currentUser) {
+
+      openApp();
+
+    }
+
+  }
+
+})();
+
+</script>
