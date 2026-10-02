@@ -1,11 +1,846 @@
-<!-- Supabase -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schul-Toilettenverwaltung</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #a8edea, #fed6e3);
+  color: #222;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* LOGIN */
+
+#authScreen {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 430px;
+  padding: 30px;
+  border-radius: 28px;
+  background: rgba(255,255,255,.9);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 15px 45px rgba(0,0,0,.15);
+}
+
+.auth-card h1 {
+  text-align: center;
+  margin-top: 0;
+}
+
+.auth-card > p {
+  text-align: center;
+  color: #666;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.auth-tabs button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 13px;
+  background: #eee;
+}
+
+.auth-tabs button.active {
+  background: #667eea;
+  color: white;
+}
+
+.field {
+  margin-bottom: 15px;
+}
+
+.field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 7px;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  outline: none;
+  background: white;
+}
+
+.primary {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  background: #667eea;
+  color: white;
+  font-weight: bold;
+}
+
+.primary:hover {
+  opacity: .9;
+}
+
+.auth-message {
+  margin-top: 13px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* APP */
+
+.app {
+  max-width: 950px;
+  margin: auto;
+  padding: 18px;
+}
+
+header {
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(15px);
+  padding: 20px;
+  border-radius: 25px;
+  margin-bottom: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.1);
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+header h1 {
+  margin: 0;
+}
+
+.user-info {
+  color: #666;
+  margin-top: 5px;
+}
+
+.logout {
+  background: #ff7675;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+
+nav {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+nav button {
+  flex: 1;
+  padding: 13px;
+  border-radius: 15px;
+  background: rgba(255,255,255,.85);
+  font-weight: bold;
+}
+
+nav button.active {
+  background: #667eea;
+  color: white;
+}
+
+.card {
+  background: rgba(255,255,255,.9);
+  backdrop-filter: blur(15px);
+  border-radius: 24px;
+  padding: 22px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+/* AKTIVE TOILETTENGÄNGE */
+
+.trip {
+  padding: 16px;
+  margin-top: 12px;
+  border-radius: 17px;
+  background: #f5f5f5;
+  border-left: 8px solid #2ecc71;
+}
+
+.trip.yellow {
+  border-left-color: #f1c40f;
+}
+
+.trip.red {
+  border-left-color: #e74c3c;
+}
+
+.trip.marked {
+  background: #fff0f0;
+}
+
+.trip-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.duration {
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.small-btn {
+  padding: 9px 12px;
+  border-radius: 11px;
+  color: white;
+  background: #667eea;
+}
+
+.return-btn {
+  background: #00b894;
+}
+
+.mark-btn {
+  background: #636e72;
+}
+
+/* ÜBERSICHT */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.stat {
+  background: white;
+  border-radius: 17px;
+  padding: 17px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.log-entry,
+.incident,
+.teacher-button {
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 15px;
+  background: #f7f7f7;
+}
+
+.incident {
+  background: #fff0f0;
+  border-left: 5px solid #e74c3c;
+}
+
+.teacher-button {
+  width: 100%;
+  border: 0;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.teacher-button:hover {
+  background: #eee;
+}
+
+.teacher-button.selected {
+  border: 3px solid #667eea;
+}
+
+.search {
+  margin-bottom: 15px;
+}
+
+.search input {
+  width: 100%;
+  padding: 13px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+}
+
+@media(max-width:650px) {
+  .header-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     LOGIN
+========================= -->
+
+<section id="authScreen">
+
+  <div class="auth-card">
+
+    <h1>🔐 Schul-Login</h1>
+
+    <p>Schul-Toilettenverwaltung</p>
+
+    <div class="auth-tabs">
+
+      <button
+        id="loginTab"
+        class="active"
+        onclick="showAuth('login')">
+        Anmelden
+      </button>
+
+      <button
+        id="registerTab"
+        onclick="showAuth('register')">
+        Konto erstellen
+      </button>
+
+    </div>
+
+    <!-- LOGIN -->
+
+    <div id="loginBox">
+
+      <div class="field">
+
+        <label>Benutzername</label>
+
+        <input
+          id="loginUsername"
+          type="text"
+          autocomplete="username"
+          placeholder="Benutzername">
+
+      </div>
+
+      <div class="field">
+
+        <label>Kennwort</label>
+
+        <input
+          id="loginPassword"
+          type="password"
+          autocomplete="current-password"
+          placeholder="Kennwort">
+
+      </div>
+
+      <button
+        class="primary"
+        onclick="login()">
+        Anmelden
+      </button>
+
+    </div>
+
+    <!-- REGISTRIERUNG -->
+
+    <div id="registerBox" class="hidden">
+
+      <div class="field">
+
+        <label>Vor- und Nachname</label>
+
+        <input
+          id="registerName"
+          type="text"
+          placeholder="z. B. Frau Müller">
+
+      </div>
+
+      <div class="field">
+
+        <label>Benutzername</label>
+
+        <input
+          id="registerUsername"
+          type="text"
+          placeholder="Benutzername">
+
+      </div>
+
+      <div class="field">
+
+        <label>Kennwort</label>
+
+        <input
+          id="registerPassword"
+          type="password"
+          placeholder="Kennwort">
+
+      </div>
+
+      <div class="field">
+
+        <label>Kennwort wiederholen</label>
+
+        <input
+          id="registerPassword2"
+          type="password"
+          placeholder="Kennwort wiederholen">
+
+      </div>
+
+      <button
+        class="primary"
+        onclick="createAccount()">
+        Konto erstellen
+      </button>
+
+    </div>
+
+    <div
+      id="authMessage"
+      class="auth-message">
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     APP
+========================= -->
+
+<div id="app" class="app hidden">
+
+  <header>
+
+    <div class="header-row">
+
+      <div>
+
+        <h1>
+          🚻 Schul-Toilettenverwaltung
+        </h1>
+
+        <div
+          id="userInfo"
+          class="user-info">
+        </div>
+
+      </div>
+
+      <button
+        class="logout"
+        onclick="logout()">
+        Abmelden
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- LEHRER NAVIGATION -->
+
+  <nav id="teacherNav">
+
+    <button
+      class="active"
+      onclick="showPage('toiletPage',this)">
+      🚻 Toilette
+    </button>
+
+    <button
+      onclick="showPage('overviewPage',this)">
+      📋 Übersicht
+    </button>
+
+  </nav>
+
+
+  <!-- ADMIN NAVIGATION -->
+
+  <nav id="adminNav" class="hidden">
+
+    <button
+      class="active"
+      onclick="showPage('adminPage',this)">
+      🛠 Admin
+    </button>
+
+    <button
+      onclick="showPage('overviewPage',this)">
+      📋 Übersicht
+    </button>
+
+  </nav>
+
+
+  <!-- =========================
+       TOILETTE
+  ========================= -->
+
+  <section id="toiletPage">
+
+    <div class="card">
+
+      <h2>
+        📝 Toilettengang genehmigen
+      </h2>
+
+      <div class="field">
+
+        <label>Lehrer</label>
+
+        <input
+          id="teacherDisplay"
+          readonly>
+
+      </div>
+
+      <div class="field">
+
+        <label>
+          Vorname und Nachname
+        </label>
+
+        <input
+          id="studentName"
+          placeholder="Vorname Nachname">
+
+      </div>
+
+      <button
+        class="primary"
+        onclick="startToilet()">
+        Toilette genehmigen
+      </button>
+
+      <p id="message"></p>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>
+        🚶 Gerade auf der Toilette
+      </h2>
+
+      <div id="activeList">
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>
+        🚨 Vorfall melden
+      </h2>
+
+      <div class="field">
+
+        <label>
+          Beschreibung
+        </label>
+
+        <textarea
+          id="incidentText"
+          rows="4"
+          placeholder="Was ist passiert?"></textarea>
+
+      </div>
+
+      <button
+        class="primary"
+        onclick="reportIncident()">
+        Vorfall melden
+      </button>
+
+      <p id="incidentMessage"></p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       ÜBERSICHT
+  ========================= -->
+
+  <section
+    id="overviewPage"
+    class="hidden">
+
+    <div class="card">
+
+      <h2>
+        📋 Meine Übersicht
+      </h2>
+
+      <div class="field">
+
+        <label>Datum</label>
+
+        <input
+          id="selectedDate"
+          type="date"
+          onchange="renderOverview()">
+
+      </div>
+
+      <div class="stats">
+
+        <div class="stat">
+
+          <div
+            class="stat-number"
+            id="statTrips">
+            0
+          </div>
+
+          Toilettengänge
+
+        </div>
+
+        <div class="stat">
+
+          <div
+            class="stat-number"
+            id="statStudents">
+            0
+          </div>
+
+          Schüler
+
+        </div>
+
+        <div class="stat">
+
+          <div
+            class="stat-number"
+            id="statMarked">
+            0
+          </div>
+
+          Markiert
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>
+        🕒 Tagesprotokoll
+      </h2>
+
+      <div id="logList">
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>
+        🚨 Gemeldete Vorfälle
+      </h2>
+
+      <div id="incidentList">
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       ADMIN
+  ========================= -->
+
+  <section
+    id="adminPage"
+    class="hidden">
+
+    <div class="card">
+
+      <h2>
+        🛠 Admin-Bereich
+      </h2>
+
+      <p>
+        Lehrer auswählen, um deren Protokoll einzusehen.
+      </p>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>
+        🔎 Lehrer
+      </h2>
+
+      <div class="search">
+
+        <input
+          id="teacherSearch"
+          placeholder="Benutzername suchen..."
+          oninput="renderTeachers()">
+
+      </div>
+
+      <div id="teacherList">
+      </div>
+
+    </div>
+
+
+    <div
+      id="adminTeacherView"
+      class="card hidden">
+
+      <h2>
+        👤 Lehrer-Protokoll
+      </h2>
+
+      <div id="selectedTeacher">
+      </div>
+
+      <div class="field">
+
+        <label>Datum</label>
+
+        <input
+          id="adminDate"
+          type="date"
+          onchange="renderAdminLog()">
+
+      </div>
+
+      <div class="stats">
+
+        <div class="stat">
+
+          <div
+            class="stat-number"
+            id="adminTrips">
+            0
+          </div>
+
+          Toilettengänge
+
+        </div>
+
+        <div class="stat">
+
+          <div
+            class="stat-number"
+            id="adminStudents">
+            0
+          </div>
+
+          Schüler
+
+        </div>
+
+        <div class="stat">
+
+          <div
+            class="stat-number"
+            id="adminMarked">
+            0
+          </div>
+
+          Markiert
+
+        </div>
+
+      </div>
+
+
+      <h3>
+        📋 Protokoll
+      </h3>
+
+      <div id="adminLog">
+      </div>
+
+
+      <h3>
+        🚨 Vorfälle
+      </h3>
+
+      <div id="adminIncidents">
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<!-- =========================
+     SUPABASE
+========================= -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-
-/* =====================================================
-   SUPABASE EINSTELLUNGEN
-   ===================================================== */
 
 const SUPABASE_URL =
   "https://afxlawmbcthmxuyssy.h.supabase.co";
@@ -14,7 +849,8 @@ const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_ap8DdhjQ6hxG3Suy81WHzQ_L7aGdxdt";
 
 const FUNCTION_URL =
-  SUPABASE_URL + "/functions/v1/dynamic-processor";
+  SUPABASE_URL +
+  "/functions/v1/dynamic-processor";
 
 
 const supabaseClient =
@@ -24,19 +860,16 @@ const supabaseClient =
   );
 
 
-/* =====================================================
-   APP
-   ===================================================== */
-
 let currentUser = null;
+
 let selectedTeacher = null;
 
 
-/* =====================================================
+/* =========================
    HILFSFUNKTIONEN
-   ===================================================== */
+========================= */
 
-function escapeHTML(value) {
+function esc(value) {
 
   return String(value)
     .replaceAll("&", "&amp;")
@@ -48,53 +881,24 @@ function escapeHTML(value) {
 }
 
 
-function escapeAttribute(value) {
+function dateNow() {
 
-  return String(value)
-    .replaceAll("\\", "\\\\")
-    .replaceAll("'", "\\'");
-
-}
-
-
-function getDate() {
-
-  const now = new Date();
-
-  const year = now.getFullYear();
-  const month =
-    String(now.getMonth() + 1).padStart(2, "0");
-  const day =
-    String(now.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
+  return new Date()
+    .toISOString()
+    .slice(0, 10);
 
 }
 
 
-function getTime() {
-
-  return new Date().toLocaleTimeString(
-    "de-DE",
-    {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    }
-  );
-
-}
-
-
-function getMinutes(trip) {
+function mins(trip) {
 
   const start =
-    new Date(trip.started_at).getTime();
+    new Date(trip.started_at);
 
   const end =
     trip.ended_at
-      ? new Date(trip.ended_at).getTime()
-      : Date.now();
+      ? new Date(trip.ended_at)
+      : new Date();
 
   return Math.floor(
     (end - start) / 60000
@@ -103,20 +907,26 @@ function getMinutes(trip) {
 }
 
 
-function getTripClass(minutes) {
+function tripClass(minutes) {
 
-  if (minutes <= 4) return "";
-  if (minutes <= 6) return "yellow";
+  if (minutes <= 4) {
+    return "green";
+  }
+
+  if (minutes <= 6) {
+    return "yellow";
+  }
 
   return "red";
+
 }
 
 
-/* =====================================================
-   AUTH-FUNCTION
-   ===================================================== */
+/* =========================
+   EDGE FUNCTION
+========================= */
 
-async function callAuthFunction(body) {
+async function authCall(body) {
 
   const response =
     await fetch(
@@ -125,11 +935,15 @@ async function callAuthFunction(body) {
         method: "POST",
 
         headers: {
-          "Content-Type": "application/json",
-          "apikey": SUPABASE_PUBLISHABLE_KEY
+          "Content-Type":
+            "application/json",
+
+          "apikey":
+            SUPABASE_PUBLISHABLE_KEY
         },
 
-        body: JSON.stringify(body)
+        body:
+          JSON.stringify(body)
       }
     );
 
@@ -142,56 +956,62 @@ async function callAuthFunction(body) {
 
     throw new Error(
       data.error ||
-      "Die Anmeldung konnte nicht durchgeführt werden."
+      "Anfrage fehlgeschlagen."
     );
 
   }
 
 
   return data;
+
 }
 
 
-/* =====================================================
+/* =========================
    LOGIN / REGISTRIERUNG
-   ===================================================== */
+========================= */
 
 function showAuth(type) {
 
-  const loginBox =
-    document.getElementById("loginBox");
-
-  const registerBox =
-    document.getElementById("registerBox");
-
-  const loginTab =
-    document.getElementById("loginTab");
-
-  const registerTab =
-    document.getElementById("registerTab");
-
-  document.getElementById(
-    "authMessage"
-  ).textContent = "";
+  document
+    .getElementById("loginBox")
+    .classList
+    .toggle(
+      "hidden",
+      type !== "login"
+    );
 
 
-  if (type === "login") {
+  document
+    .getElementById("registerBox")
+    .classList
+    .toggle(
+      "hidden",
+      type === "login"
+    );
 
-    loginBox.classList.remove("hidden");
-    registerBox.classList.add("hidden");
 
-    loginTab.classList.add("active");
-    registerTab.classList.remove("active");
+  document
+    .getElementById("loginTab")
+    .classList
+    .toggle(
+      "active",
+      type === "login"
+    );
 
-  } else {
 
-    loginBox.classList.add("hidden");
-    registerBox.classList.remove("hidden");
+  document
+    .getElementById("registerTab")
+    .classList
+    .toggle(
+      "active",
+      type !== "login"
+    );
 
-    loginTab.classList.remove("active");
-    registerTab.classList.add("active");
 
-  }
+  document
+    .getElementById("authMessage")
+    .textContent = "";
 
 }
 
@@ -201,46 +1021,73 @@ function showAuth(type) {
 async function createAccount() {
 
   const name =
-    document.getElementById(
-      "registerName"
-    ).value.trim();
+    document
+      .getElementById("registerName")
+      .value
+      .trim();
+
 
   const username =
-    document.getElementById(
-      "registerUsername"
-    ).value.trim().toLowerCase();
+    document
+      .getElementById("registerUsername")
+      .value
+      .trim()
+      .toLowerCase();
+
 
   const password =
-    document.getElementById(
-      "registerPassword"
-    ).value;
+    document
+      .getElementById("registerPassword")
+      .value;
+
 
   const password2 =
-    document.getElementById(
-      "registerPassword2"
-    ).value;
+    document
+      .getElementById("registerPassword2")
+      .value;
+
 
   const message =
-    document.getElementById(
-      "authMessage"
-    );
+    document
+      .getElementById("authMessage");
 
 
-  if (!name || !username || !password) {
+  if (
+    !name ||
+    !username ||
+    !password
+  ) {
 
     message.textContent =
       "Bitte alle Felder ausfüllen.";
 
     return;
+
   }
 
 
-  if (username === "admin") {
+  if (
+    username === "admin"
+  ) {
 
     message.textContent =
       "Dieser Benutzername ist reserviert.";
 
     return;
+
+  }
+
+
+  if (
+    !/^[a-z0-9._-]{3,40}$/
+      .test(username)
+  ) {
+
+    message.textContent =
+      "Der Benutzername enthält ungültige Zeichen.";
+
+    return;
+
   }
 
 
@@ -250,6 +1097,7 @@ async function createAccount() {
       "Das Kennwort muss mindestens 8 Zeichen haben.";
 
     return;
+
   }
 
 
@@ -259,6 +1107,7 @@ async function createAccount() {
       "Die Kennwörter stimmen nicht überein.";
 
     return;
+
   }
 
 
@@ -268,44 +1117,42 @@ async function createAccount() {
 
   try {
 
-    await callAuthFunction({
-
+    await authCall({
       action: "register",
-
       name: name,
-
       username: username,
-
       password: password
-
     });
 
 
-    document.getElementById(
-      "registerName"
-    ).value = "";
+    document
+      .getElementById("registerName")
+      .value = "";
 
-    document.getElementById(
-      "registerUsername"
-    ).value = "";
+    document
+      .getElementById("registerUsername")
+      .value = "";
 
-    document.getElementById(
-      "registerPassword"
-    ).value = "";
+    document
+      .getElementById("registerPassword")
+      .value = "";
 
-    document.getElementById(
-      "registerPassword2"
-    ).value = "";
+    document
+      .getElementById("registerPassword2")
+      .value = "";
 
 
     showAuth("login");
 
-    document.getElementById(
-      "authMessage"
-    ).textContent =
+
+    document
+      .getElementById("authMessage")
+      .textContent =
       "Konto wurde erstellt. Du kannst dich jetzt anmelden.";
 
-  } catch (error) {
+  }
+
+  catch(error) {
 
     message.textContent =
       error.message;
@@ -320,19 +1167,22 @@ async function createAccount() {
 async function login() {
 
   const username =
-    document.getElementById(
-      "loginUsername"
-    ).value.trim().toLowerCase();
+    document
+      .getElementById("loginUsername")
+      .value
+      .trim()
+      .toLowerCase();
+
 
   const password =
-    document.getElementById(
-      "loginPassword"
-    ).value;
+    document
+      .getElementById("loginPassword")
+      .value;
+
 
   const message =
-    document.getElementById(
-      "authMessage"
-    );
+    document
+      .getElementById("authMessage");
 
 
   if (!username || !password) {
@@ -341,6 +1191,7 @@ async function login() {
       "Bitte Benutzername und Kennwort eingeben.";
 
     return;
+
   }
 
 
@@ -351,53 +1202,39 @@ async function login() {
   try {
 
     const data =
-      await callAuthFunction({
-
+      await authCall({
         action: "login",
-
         username: username,
-
         password: password
-
       });
 
 
-    if (!data.access_token ||
-        !data.refresh_token) {
+    const session =
+      await supabaseClient
+        .auth
+        .setSession({
+          access_token:
+            data.access_token,
 
-      throw new Error(
-        "Keine gültige Sitzung erhalten."
-      );
+          refresh_token:
+            data.refresh_token
+        });
+
+
+    if (session.error) {
+
+      throw session.error;
 
     }
 
 
-    const sessionResult =
-      await supabaseClient.auth.setSession({
-
-        access_token:
-          data.access_token,
-
-        refresh_token:
-          data.refresh_token
-
-      });
-
-
-    if (sessionResult.error) {
-
-      throw sessionResult.error;
-
-    }
-
-
-    await loadCurrentUser();
+    await loadUser();
 
 
     if (!currentUser) {
 
       throw new Error(
-        "Das Benutzerprofil konnte nicht geladen werden."
+        "Benutzerprofil konnte nicht geladen werden."
       );
 
     }
@@ -405,7 +1242,9 @@ async function login() {
 
     openApp();
 
-  } catch (error) {
+  }
+
+  catch(error) {
 
     console.error(error);
 
@@ -418,16 +1257,20 @@ async function login() {
 }
 
 
-/* AKTUELLEN BENUTZER LADEN */
+/* =========================
+   BENUTZER LADEN
+========================= */
 
-async function loadCurrentUser() {
+async function loadUser() {
 
   const {
     data: {
       user
     }
   } =
-    await supabaseClient.auth.getUser();
+    await supabaseClient
+      .auth
+      .getUser();
 
 
   if (!user) {
@@ -440,7 +1283,7 @@ async function loadCurrentUser() {
 
 
   const {
-    data: profile,
+    data,
     error
   } =
     await supabaseClient
@@ -463,76 +1306,76 @@ async function loadCurrentUser() {
   }
 
 
-  currentUser = {
-
-    id: profile.id,
-
-    name: profile.name,
-
-    username: profile.username,
-
-    role: profile.role
-
-  };
+  currentUser = data;
 
 }
 
 
-/* =====================================================
+/* =========================
    APP ÖFFNEN
-   ===================================================== */
+========================= */
 
 async function openApp() {
 
   document
     .getElementById("authScreen")
-    .classList.add("hidden");
+    .classList
+    .add("hidden");
+
 
   document
     .getElementById("app")
-    .classList.remove("hidden");
+    .classList
+    .remove("hidden");
 
 
-  document.getElementById(
-    "userInfo"
-  ).textContent =
-    currentUser.name +
-    " • @" +
-    currentUser.username;
+  document
+    .getElementById("userInfo")
+    .textContent =
+      currentUser.name +
+      " • @" +
+      currentUser.username;
 
 
-  if (currentUser.role === "admin") {
+  const isAdmin =
+    currentUser.role === "admin";
 
-    document
-      .getElementById("teacherNav")
-      .classList.add("hidden");
 
-    document
-      .getElementById("adminNav")
-      .classList.remove("hidden");
+  document
+    .getElementById("teacherNav")
+    .classList
+    .toggle(
+      "hidden",
+      isAdmin
+    );
+
+
+  document
+    .getElementById("adminNav")
+    .classList
+    .toggle(
+      "hidden",
+      !isAdmin
+    );
+
+
+  setDates();
+
+
+  if (isAdmin) {
 
     showPage("adminPage");
 
-    setDates();
-
     await renderTeachers();
 
-  } else {
+  }
+
+  else {
 
     document
-      .getElementById("teacherNav")
-      .classList.remove("hidden");
-
-    document
-      .getElementById("adminNav")
-      .classList.add("hidden");
-
-    document.getElementById(
-      "teacherDisplay"
-    ).value =
-      currentUser.name;
-
-    setDates();
+      .getElementById("teacherDisplay")
+      .value =
+        currentUser.name;
 
     showPage("toiletPage");
 
@@ -543,88 +1386,81 @@ async function openApp() {
 }
 
 
-/* LOGOUT */
+/* =========================
+   LOGOUT
+========================= */
 
 async function logout() {
 
-  await supabaseClient.auth.signOut();
+  await supabaseClient
+    .auth
+    .signOut();
 
-  currentUser = null;
-  selectedTeacher = null;
-
-
-  document
-    .getElementById("app")
-    .classList.add("hidden");
-
-  document
-    .getElementById("authScreen")
-    .classList.remove("hidden");
-
-
-  document.getElementById(
-    "loginUsername"
-  ).value = "";
-
-  document.getElementById(
-    "loginPassword"
-  ).value = "";
-
-  document.getElementById(
-    "authMessage"
-  ).textContent = "";
-
-
-  showAuth("login");
+  location.reload();
 
 }
 
 
-/* =====================================================
+/* =========================
    SEITEN
-   ===================================================== */
+========================= */
 
-function showPage(id, button) {
+function showPage(
+  id,
+  button
+) {
 
   [
     "toiletPage",
     "overviewPage",
     "adminPage"
-  ].forEach(page => {
-
-    document
-      .getElementById(page)
-      .classList.add("hidden");
-
-  });
+  ]
+  .forEach(
+    page =>
+      document
+        .getElementById(page)
+        .classList
+        .add("hidden")
+  );
 
 
   document
     .getElementById(id)
-    .classList.remove("hidden");
+    .classList
+    .remove("hidden");
 
 
   if (button) {
 
-    button.parentElement
+    button
+      .parentElement
       .querySelectorAll("button")
       .forEach(
-        b => b.classList.remove("active")
+        b =>
+          b.classList
+            .remove("active")
       );
 
-    button.classList.add("active");
+
+    button
+      .classList
+      .add("active");
 
   }
 
 
-  if (id === "overviewPage") {
+  if (
+    id === "overviewPage"
+  ) {
 
     renderOverview();
 
   }
 
 
-  if (id === "adminPage") {
+  if (
+    id === "adminPage"
+  ) {
 
     renderTeachers();
 
@@ -633,55 +1469,51 @@ function showPage(id, button) {
 }
 
 
-/* =====================================================
+/* =========================
    DATUM
-   ===================================================== */
+========================= */
 
 function setDates() {
 
-  const date = getDate();
+  const today =
+    dateNow();
 
 
-  document.getElementById(
-    "selectedDate"
-  ).value = date;
+  document
+    .getElementById("selectedDate")
+    .value = today;
 
 
-  document.getElementById(
-    "adminDate"
-  ).value = date;
+  document
+    .getElementById("adminDate")
+    .value = today;
 
 }
 
 
-/* =====================================================
+/* =========================
    TOILETTENGANG STARTEN
-   ===================================================== */
+========================= */
 
 async function startToilet() {
 
-  if (!currentUser ||
-      currentUser.role !== "teacher") {
-
-    return;
-
-  }
-
-
   const input =
-    document.getElementById(
-      "studentName"
-    );
+    document
+      .getElementById("studentName");
+
 
   const name =
     input.value.trim();
 
 
+  const message =
+    document
+      .getElementById("message");
+
+
   if (!name) {
 
-    document.getElementById(
-      "message"
-    ).textContent =
+    message.textContent =
       "Bitte Vorname und Nachname eingeben.";
 
     return;
@@ -689,190 +1521,167 @@ async function startToilet() {
   }
 
 
-  const button =
-    document.querySelector(
-      "#toiletPage .primary"
-    );
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("toilet_trips")
+      .insert({
+        user_id:
+          currentUser.id,
+
+        student_name:
+          name,
+
+        started_at:
+          new Date().toISOString(),
+
+        marked:
+          false
+      });
 
 
-  button.disabled = true;
+  if (error) {
 
-  button.textContent =
-    "Wird gespeichert...";
-
-
-  try {
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("toilet_trips")
-        .insert({
-
-          user_id:
-            currentUser.id,
-
-          student_name:
-            name,
-
-          started_at:
-            new Date().toISOString(),
-
-          marked:
-            false
-
-        });
-
-
-    if (error) {
-
-      throw error;
-
-    }
-
-
-    input.value = "";
-
-    document.getElementById(
-      "message"
-    ).textContent =
-      "Toilettengang wurde genehmigt.";
-
-
-    await render();
-
-  } catch (error) {
-
-    console.error(error);
-
-    document.getElementById(
-      "message"
-    ).textContent =
+    message.textContent =
       "Fehler beim Speichern: " +
       error.message;
 
-  } finally {
-
-    button.disabled = false;
-
-    button.textContent =
-      "Toilette genehmigen";
+    return;
 
   }
+
+
+  input.value = "";
+
+  message.textContent =
+    "Toilettengang wurde genehmigt.";
+
+
+  await render();
 
 }
 
 
-/* =====================================================
+/* =========================
    ZURÜCKGEKOMMEN
-   ===================================================== */
+========================= */
 
 async function finishTrip(id) {
 
-  try {
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("toilet_trips")
-        .update({
-
-          ended_at:
-            new Date().toISOString()
-
-        })
-        .eq("id", id)
-        .eq("user_id", currentUser.id);
-
-
-    if (error) {
-
-      throw error;
-
-    }
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("toilet_trips")
+      .update({
+        ended_at:
+          new Date().toISOString()
+      })
+      .eq(
+        "id",
+        id
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      );
 
 
-    await render();
-
-  } catch (error) {
+  if (error) {
 
     console.error(error);
+
+  }
+
+  else {
+
+    await render();
 
   }
 
 }
 
 
-/* =====================================================
+/* =========================
    MARKIEREN
-   ===================================================== */
+========================= */
 
 async function toggleMarked(id) {
 
-  try {
-
-    const {
-      data: trip,
-      error: readError
-    } =
-      await supabaseClient
-        .from("toilet_trips")
-        .select("marked")
-        .eq("id", id)
-        .eq("user_id", currentUser.id)
-        .single();
-
-
-    if (readError) {
-
-      throw readError;
-
-    }
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("toilet_trips")
+      .select("marked")
+      .eq(
+        "id",
+        id
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .single();
 
 
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("toilet_trips")
-        .update({
-
-          marked:
-            !trip.marked
-
-        })
-        .eq("id", id)
-        .eq("user_id", currentUser.id);
-
-
-    if (error) {
-
-      throw error;
-
-    }
-
-
-    await render();
-
-  } catch (error) {
+  if (error) {
 
     console.error(error);
+
+    return;
+
+  }
+
+
+  const {
+    error: updateError
+  } =
+    await supabaseClient
+      .from("toilet_trips")
+      .update({
+        marked:
+          !data.marked
+      })
+      .eq(
+        "id",
+        id
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      );
+
+
+  if (updateError) {
+
+    console.error(
+      updateError
+    );
+
+  }
+
+  else {
+
+    await render();
 
   }
 
 }
 
 
-/* =====================================================
-   AKTIVE TRIPS
-   ===================================================== */
+/* =========================
+   AKTIVE TOILETTENGÄNGE
+========================= */
 
 async function render() {
 
-  if (!currentUser ||
-      currentUser.role !== "teacher") {
+  if (
+    !currentUser ||
+    currentUser.role !== "teacher"
+  ) {
 
     return;
 
@@ -886,11 +1695,20 @@ async function render() {
     await supabaseClient
       .from("toilet_trips")
       .select("*")
-      .eq("user_id", currentUser.id)
-      .is("ended_at", null)
-      .order("started_at", {
-        ascending: true
-      });
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .is(
+        "ended_at",
+        null
+      )
+      .order(
+        "started_at",
+        {
+          ascending: true
+        }
+      );
 
 
   if (error) {
@@ -903,12 +1721,14 @@ async function render() {
 
 
   const list =
-    document.getElementById(
-      "activeList"
-    );
+    document
+      .getElementById("activeList");
 
 
-  if (!data || data.length === 0) {
+  if (
+    !data ||
+    data.length === 0
+  ) {
 
     list.innerHTML =
       "<p>Momentan ist niemand auf der Toilette.</p>";
@@ -919,108 +1739,93 @@ async function render() {
 
 
   list.innerHTML =
-    data.map(trip => {
+    data
+      .map(trip => {
 
-      const minutes =
-        getMinutes(trip);
-
-
-      const start =
-        new Date(
-          trip.started_at
-        ).toLocaleTimeString(
-          "de-DE",
-          {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit"
-          }
-        );
+        const minutes =
+          mins(trip);
 
 
-      return `
+        const start =
+          new Date(
+            trip.started_at
+          )
+          .toLocaleTimeString(
+            "de-DE"
+          );
 
-        <div class="trip
-          ${getTripClass(minutes)}
-          ${trip.marked ? "marked" : ""}">
 
-          <div class="trip-top">
+        return `
+          <div class="trip ${tripClass(minutes)} ${trip.marked ? "marked" : ""}">
 
-            <strong>
-              ${escapeHTML(
-                trip.student_name
-              )}
-            </strong>
+            <div class="trip-top">
 
-            <span class="duration">
-              ${minutes} Min.
-            </span>
+              <strong>
+                ${esc(trip.student_name)}
+              </strong>
 
-          </div>
+              <span class="duration">
+                ${minutes} Min.
+              </span>
 
-          <div>
-            Seit ${start}
-          </div>
+            </div>
 
-          <div class="actions">
+            <div>
+              Seit ${start}
+            </div>
 
-            <button
-              class="small-btn return-btn"
-              onclick="finishTrip('${trip.id}')">
-              ✓ Zurückgekommen
-            </button>
+            <div class="actions">
 
-            <button
-              class="small-btn mark-btn"
-              onclick="toggleMarked('${trip.id}')">
+              <button
+                class="small-btn return-btn"
+                onclick="finishTrip('${trip.id}')">
+                ✓ Zurückgekommen
+              </button>
 
-              ${
-                trip.marked
-                  ? "✓ Markierung entfernen"
-                  : "⚠ Zur Überprüfung markieren"
-              }
+              <button
+                class="small-btn mark-btn"
+                onclick="toggleMarked('${trip.id}')">
+                ${
+                  trip.marked
+                    ? "✓ Markierung entfernen"
+                    : "⚠ Zur Überprüfung markieren"
+                }
+              </button>
 
-            </button>
+            </div>
 
           </div>
+        `;
 
-        </div>
-
-      `;
-
-    }).join("");
+      })
+      .join("");
 
 }
 
 
-/* =====================================================
+/* =========================
    VORFALL MELDEN
-   ===================================================== */
+========================= */
 
 async function reportIncident() {
 
-  if (!currentUser ||
-      currentUser.role !== "teacher") {
-
-    return;
-
-  }
-
-
   const input =
-    document.getElementById(
-      "incidentText"
-    );
+    document
+      .getElementById("incidentText");
+
 
   const text =
     input.value.trim();
 
 
+  const message =
+    document
+      .getElementById("incidentMessage");
+
+
   if (!text) {
 
-    document.getElementById(
-      "incidentMessage"
-    ).textContent =
+    message.textContent =
       "Bitte eine Beschreibung eingeben.";
 
     return;
@@ -1028,65 +1833,53 @@ async function reportIncident() {
   }
 
 
-  try {
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("incidents")
+      .insert({
+        user_id:
+          currentUser.id,
 
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("incidents")
-        .insert({
+        description:
+          text,
 
-          user_id:
-            currentUser.id,
-
-          description:
-            text,
-
-          incident_time:
-            new Date().toISOString()
-
-        });
+        incident_time:
+          new Date().toISOString()
+      });
 
 
-    if (error) {
+  if (error) {
 
-      throw error;
+    message.textContent =
+      "Fehler beim Speichern: " +
+      error.message;
 
-    }
+  }
 
+  else {
 
     input.value = "";
 
-    document.getElementById(
-      "incidentMessage"
-    ).textContent =
+    message.textContent =
       "Vorfall wurde gespeichert.";
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    document.getElementById(
-      "incidentMessage"
-    ).textContent =
-      "Fehler beim Speichern: " +
-      error.message;
 
   }
 
 }
 
 
-/* =====================================================
+/* =========================
    LEHRER-ÜBERSICHT
-   ===================================================== */
+========================= */
 
 async function renderOverview() {
 
-  if (!currentUser ||
-      currentUser.role !== "teacher") {
+  if (
+    !currentUser ||
+    currentUser.role !== "teacher"
+  ) {
 
     return;
 
@@ -1094,234 +1887,224 @@ async function renderOverview() {
 
 
   const date =
-    document.getElementById(
-      "selectedDate"
-    ).value;
+    document
+      .getElementById("selectedDate")
+      .value;
 
 
   const start =
-    `${date}T00:00:00`;
+    date +
+    "T00:00:00";
+
 
   const end =
-    `${date}T23:59:59.999`;
+    date +
+    "T23:59:59.999";
 
 
   const {
-    data: tripsData,
-    error: tripsError
+    data: trips,
+    error: tripError
   } =
     await supabaseClient
       .from("toilet_trips")
       .select("*")
-      .eq("user_id", currentUser.id)
-      .gte("started_at", start)
-      .lte("started_at", end)
-      .order("started_at", {
-        ascending: false
-      });
-
-
-  if (tripsError) {
-
-    console.error(tripsError);
-
-    return;
-
-  }
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .gte(
+        "started_at",
+        start
+      )
+      .lte(
+        "started_at",
+        end
+      )
+      .order(
+        "started_at",
+        {
+          ascending: false
+        }
+      );
 
 
   const {
-    data: incidentsData,
-    error: incidentsError
+    data: incidents,
+    error: incidentError
   } =
     await supabaseClient
       .from("incidents")
       .select("*")
-      .eq("user_id", currentUser.id)
-      .gte("incident_time", start)
-      .lte("incident_time", end)
-      .order("incident_time", {
-        ascending: false
-      });
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .gte(
+        "incident_time",
+        start
+      )
+      .lte(
+        "incident_time",
+        end
+      )
+      .order(
+        "incident_time",
+        {
+          ascending: false
+        }
+      );
 
 
-  if (incidentsError) {
+  if (
+    tripError ||
+    incidentError
+  ) {
 
-    console.error(incidentsError);
+    console.error(
+      tripError ||
+      incidentError
+    );
 
     return;
 
   }
 
 
-  const ownTrips =
-    tripsData || [];
-
-  const ownIncidents =
-    incidentsData || [];
-
-
-  document.getElementById(
-    "statTrips"
-  ).textContent =
-    ownTrips.length;
+  document
+    .getElementById("statTrips")
+    .textContent =
+      trips?.length || 0;
 
 
-  document.getElementById(
-    "statStudents"
-  ).textContent =
-    new Set(
-      ownTrips.map(
-        t => t.student_name
-      )
-    ).size;
+  document
+    .getElementById("statStudents")
+    .textContent =
+      new Set(
+        (trips || [])
+          .map(
+            trip =>
+              trip.student_name
+          )
+      ).size;
 
 
-  document.getElementById(
-    "statMarked"
-  ).textContent =
-    ownTrips.filter(
-      t => t.marked
-    ).length;
+  document
+    .getElementById("statMarked")
+    .textContent =
+      (trips || [])
+        .filter(
+          trip =>
+            trip.marked
+        )
+        .length;
 
 
-  const log =
-    document.getElementById(
-      "logList"
-    );
+  document
+    .getElementById("logList")
+    .innerHTML =
+      trips?.length
+
+        ? trips
+            .map(trip => {
+
+              const startTime =
+                new Date(
+                  trip.started_at
+                )
+                .toLocaleTimeString(
+                  "de-DE"
+                );
 
 
-  if (!ownTrips.length) {
-
-    log.innerHTML =
-      "<p>Keine Einträge für diesen Tag.</p>";
-
-  } else {
-
-    log.innerHTML =
-      ownTrips.map(t => {
-
-        const startTime =
-          new Date(
-            t.started_at
-          ).toLocaleTimeString(
-            "de-DE",
-            {
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit"
-            }
-          );
+              const endTime =
+                trip.ended_at
+                  ? new Date(
+                      trip.ended_at
+                    )
+                    .toLocaleTimeString(
+                      "de-DE"
+                    )
+                  : "noch unterwegs";
 
 
-        const endTime =
-          t.ended_at
-            ? new Date(
-                t.ended_at
-              ).toLocaleTimeString(
-                "de-DE",
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit"
-                }
-              )
-            : "noch unterwegs";
+              return `
+                <div class="log-entry">
+
+                  <strong>
+                    ${esc(trip.student_name)}
+                  </strong>
+
+                  <br>
+
+                  ${startTime}
+                  →
+                  ${endTime}
+
+                  ${
+                    trip.marked
+                      ? "<br>⚠ Zur Überprüfung markiert"
+                      : ""
+                  }
+
+                </div>
+              `;
+
+            })
+            .join("")
+
+        : "<p>Keine Einträge für diesen Tag.</p>";
 
 
-        return `
+  document
+    .getElementById("incidentList")
+    .innerHTML =
+      incidents?.length
 
-          <div class="log-entry">
+        ? incidents
+            .map(incident => {
 
-            <strong>
-              ${escapeHTML(
-                t.student_name
-              )}
-            </strong>
+              return `
+                <div class="incident">
 
-            <br>
+                  <strong>
+                    ${
+                      new Date(
+                        incident.incident_time
+                      )
+                      .toLocaleTimeString(
+                        "de-DE"
+                      )
+                    }
+                  </strong>
 
-            ${startTime}
-            →
-            ${endTime}
+                  <br>
 
-            ${
-              t.marked
-                ? "<br>⚠ Zur Überprüfung markiert"
-                : ""
-            }
+                  ${esc(
+                    incident.description
+                  )}
 
-          </div>
+                </div>
+              `;
 
-        `;
+            })
+            .join("")
 
-      }).join("");
-
-  }
-
-
-  const incidentList =
-    document.getElementById(
-      "incidentList"
-    );
-
-
-  if (!ownIncidents.length) {
-
-    incidentList.innerHTML =
-      "<p>Keine Vorfälle für diesen Tag.</p>";
-
-  } else {
-
-    incidentList.innerHTML =
-      ownIncidents.map(i => {
-
-        const time =
-          new Date(
-            i.incident_time
-          ).toLocaleTimeString(
-            "de-DE",
-            {
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit"
-            }
-          );
-
-
-        return `
-
-          <div class="incident">
-
-            <strong>
-              ${time}
-            </strong>
-
-            <br>
-
-            ${escapeHTML(
-              i.description
-            )}
-
-          </div>
-
-        `;
-
-      }).join("");
-
-  }
+        : "<p>Keine Vorfälle für diesen Tag.</p>";
 
 }
 
 
-/* =====================================================
-   ADMIN – LEHRER LADEN
-   ===================================================== */
+/* =========================
+   ADMIN: LEHRER LADEN
+========================= */
 
 async function renderTeachers() {
 
-  if (!currentUser ||
-      currentUser.role !== "admin") {
+  if (
+    !currentUser ||
+    currentUser.role !== "admin"
+  ) {
 
     return;
 
@@ -1330,16 +2113,14 @@ async function renderTeachers() {
 
   const search =
     document
-      .getElementById(
-        "teacherSearch"
-      )
+      .getElementById("teacherSearch")
       .value
       .toLowerCase()
       .trim();
 
 
   const {
-    data: teachers,
+    data,
     error
   } =
     await supabaseClient
@@ -1347,8 +2128,13 @@ async function renderTeachers() {
       .select(
         "id,name,username,role"
       )
-      .eq("role", "teacher")
-      .order("name");
+      .eq(
+        "role",
+        "teacher"
+      )
+      .order(
+        "name"
+      );
 
 
   if (error) {
@@ -1361,84 +2147,74 @@ async function renderTeachers() {
 
 
   const filtered =
-    (teachers || []).filter(
-      user =>
+    (data || [])
+      .filter(user =>
         user.username
           .toLowerCase()
           .includes(search)
+
         ||
+
         user.name
           .toLowerCase()
           .includes(search)
-    );
+      );
 
 
-  const list =
-    document.getElementById(
-      "teacherList"
-    );
+  document
+    .getElementById("teacherList")
+    .innerHTML =
+      filtered.length
 
+        ? filtered
+            .map(user => {
 
-  if (!filtered.length) {
+              return `
+                <button
+                  class="teacher-button ${
+                    selectedTeacher === user.username
+                      ? "selected"
+                      : ""
+                  }"
+                  onclick="selectTeacher('${esc(user.username)}')">
 
-    list.innerHTML =
-      "<p>Kein Lehrer gefunden.</p>";
+                  <span>
 
-    return;
+                    👤
+                    <strong>
+                      ${esc(user.name)}
+                    </strong>
 
-  }
+                    <br>
 
+                    <small>
+                      @${esc(user.username)}
+                    </small>
 
-  list.innerHTML =
-    filtered.map(user => `
+                  </span>
 
-      <button
-        class="teacher-button
-          ${
-            selectedTeacher === user.username
-              ? "selected"
-              : ""
-          }"
-        onclick="
-          selectTeacher(
-            '${escapeAttribute(
-              user.username
-            )}'
-          )
-        ">
+                  <span>
+                    ›
+                  </span>
 
-        <span>
+                </button>
+              `;
 
-          👤 <strong>
-            ${escapeHTML(
-              user.name
-            )}
-          </strong>
+            })
+            .join("")
 
-          <br>
-
-          <small>
-            @${escapeHTML(
-              user.username
-            )}
-          </small>
-
-        </span>
-
-        <span>›</span>
-
-      </button>
-
-    `).join("");
+        : "<p>Kein Lehrer gefunden.</p>";
 
 }
 
 
-/* =====================================================
-   ADMIN – LEHRER AUSWÄHLEN
-   ===================================================== */
+/* =========================
+   ADMIN: LEHRER AUSWÄHLEN
+========================= */
 
-async function selectTeacher(username) {
+async function selectTeacher(
+  username
+) {
 
   selectedTeacher =
     username;
@@ -1448,19 +2224,26 @@ async function selectTeacher(username) {
     .getElementById(
       "adminTeacherView"
     )
-    .classList.remove("hidden");
+    .classList
+    .remove("hidden");
+
+
+  await renderTeachers();
 
 
   const {
-    data: user,
+    data,
     error
   } =
     await supabaseClient
       .from("profiles")
       .select(
-        "id,name,username,role"
+        "id,name,username"
       )
-      .eq("username", username)
+      .eq(
+        "username",
+        username
+      )
       .single();
 
 
@@ -1473,70 +2256,76 @@ async function selectTeacher(username) {
   }
 
 
-  document.getElementById(
-    "selectedTeacher"
-  ).innerHTML = `
+  document
+    .getElementById(
+      "selectedTeacher"
+    )
+    .innerHTML = `
+      <p>
+        <strong>
+          ${esc(data.name)}
+        </strong>
+        ·
+        @${esc(data.username)}
+      </p>
+    `;
 
-    <p>
-
-      <strong>
-        ${escapeHTML(
-          user.name
-        )}
-      </strong>
-
-      · @${escapeHTML(
-        user.username
-      )}
-
-    </p>
-
-  `;
-
-
-  await renderTeachers();
 
   await renderAdminLog();
 
 }
 
 
-/* =====================================================
-   ADMIN – PROTOKOLL
-   ===================================================== */
+/* =========================
+   ADMIN: PROTOKOLL
+========================= */
 
 async function renderAdminLog() {
 
-  if (!selectedTeacher) return;
+  if (!selectedTeacher) {
+
+    return;
+
+  }
 
 
   const date =
-    document.getElementById(
-      "adminDate"
-    ).value;
+    document
+      .getElementById("adminDate")
+      .value;
 
 
   const start =
-    `${date}T00:00:00`;
+    date +
+    "T00:00:00";
+
 
   const end =
-    `${date}T23:59:59.999`;
+    date +
+    "T23:59:59.999";
 
 
   const {
-    data: teacher,
-    error: teacherError
+    data: user,
+    error: userError
   } =
     await supabaseClient
       .from("profiles")
-      .select("id,name,username")
-      .eq("username", selectedTeacher)
+      .select(
+        "id,name,username"
+      )
+      .eq(
+        "username",
+        selectedTeacher
+      )
       .single();
 
 
-  if (teacherError) {
+  if (userError) {
 
-    console.error(teacherError);
+    console.error(
+      userError
+    );
 
     return;
 
@@ -1544,252 +2333,243 @@ async function renderAdminLog() {
 
 
   const {
-    data: tripsData,
-    error: tripsError
+    data: trips,
+    error: tripError
   } =
     await supabaseClient
       .from("toilet_trips")
       .select("*")
-      .eq("user_id", teacher.id)
-      .gte("started_at", start)
-      .lte("started_at", end)
-      .order("started_at", {
-        ascending: false
-      });
-
-
-  if (tripsError) {
-
-    console.error(tripsError);
-
-    return;
-
-  }
+      .eq(
+        "user_id",
+        user.id
+      )
+      .gte(
+        "started_at",
+        start
+      )
+      .lte(
+        "started_at",
+        end
+      )
+      .order(
+        "started_at",
+        {
+          ascending: false
+        }
+      );
 
 
   const {
-    data: incidentsData,
-    error: incidentsError
+    data: incidents,
+    error: incidentError
   } =
     await supabaseClient
       .from("incidents")
       .select("*")
-      .eq("user_id", teacher.id)
-      .gte("incident_time", start)
-      .lte("incident_time", end)
-      .order("incident_time", {
-        ascending: false
-      });
+      .eq(
+        "user_id",
+        user.id
+      )
+      .gte(
+        "incident_time",
+        start
+      )
+      .lte(
+        "incident_time",
+        end
+      )
+      .order(
+        "incident_time",
+        {
+          ascending: false
+        }
+      );
 
 
-  if (incidentsError) {
+  if (
+    tripError ||
+    incidentError
+  ) {
 
-    console.error(incidentsError);
+    console.error(
+      tripError ||
+      incidentError
+    );
 
     return;
 
   }
 
 
-  const teacherTrips =
-    tripsData || [];
-
-  const teacherIncidents =
-    incidentsData || [];
-
-
-  document.getElementById(
-    "adminTrips"
-  ).textContent =
-    teacherTrips.length;
+  document
+    .getElementById("adminTrips")
+    .textContent =
+      trips?.length || 0;
 
 
-  document.getElementById(
-    "adminStudents"
-  ).textContent =
-    new Set(
-      teacherTrips.map(
-        t => t.student_name
-      )
-    ).size;
+  document
+    .getElementById("adminStudents")
+    .textContent =
+      new Set(
+        (trips || [])
+          .map(
+            trip =>
+              trip.student_name
+          )
+      ).size;
 
 
-  document.getElementById(
-    "adminMarked"
-  ).textContent =
-    teacherTrips.filter(
-      t => t.marked
-    ).length;
+  document
+    .getElementById("adminMarked")
+    .textContent =
+      (trips || [])
+        .filter(
+          trip =>
+            trip.marked
+        )
+        .length;
 
 
-  const log =
-    document.getElementById(
-      "adminLog"
-    );
+  document
+    .getElementById("adminLog")
+    .innerHTML =
+      trips?.length
+
+        ? trips
+            .map(trip => {
+
+              return `
+                <div class="log-entry">
+
+                  <strong>
+                    ${esc(trip.student_name)}
+                  </strong>
+
+                  <br>
+
+                  ${
+                    new Date(
+                      trip.started_at
+                    )
+                    .toLocaleTimeString(
+                      "de-DE"
+                    )
+                  }
+
+                  →
+
+                  ${
+                    trip.ended_at
+                      ? new Date(
+                          trip.ended_at
+                        )
+                        .toLocaleTimeString(
+                          "de-DE"
+                        )
+                      : "noch unterwegs"
+                  }
+
+                  ${
+                    trip.marked
+                      ? "<br>⚠ Zur Überprüfung markiert"
+                      : ""
+                  }
+
+                </div>
+              `;
+
+            })
+            .join("")
+
+        : "<p>Keine Einträge für diesen Tag.</p>";
 
 
-  if (!teacherTrips.length) {
-
-    log.innerHTML =
-      "<p>Keine Einträge für diesen Tag.</p>";
-
-  } else {
-
-    log.innerHTML =
-      teacherTrips.map(t => {
-
-        const startTime =
-          new Date(
-            t.started_at
-          ).toLocaleTimeString(
-            "de-DE",
-            {
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit"
-            }
-          );
-
-
-        const endTime =
-          t.ended_at
-            ? new Date(
-                t.ended_at
-              ).toLocaleTimeString(
-                "de-DE",
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit"
-                }
-              )
-            : "noch unterwegs";
-
-
-        return `
-
-          <div class="log-entry">
-
-            <strong>
-              ${escapeHTML(
-                t.student_name
-              )}
-            </strong>
-
-            <br>
-
-            ${startTime}
-            →
-            ${endTime}
-
-            ${
-              t.marked
-                ? "<br>⚠ Zur Überprüfung markiert"
-                : ""
-            }
-
-          </div>
-
-        `;
-
-      }).join("");
-
-  }
-
-
-  const incidentList =
-    document.getElementById(
+  document
+    .getElementById(
       "adminIncidents"
-    );
+    )
+    .innerHTML =
+      incidents?.length
 
+        ? incidents
+            .map(incident => {
 
-  if (!teacherIncidents.length) {
+              return `
+                <div class="incident">
 
-    incidentList.innerHTML =
-      "<p>Keine Vorfälle für diesen Tag.</p>";
+                  <strong>
+                    ${
+                      new Date(
+                        incident.incident_time
+                      )
+                      .toLocaleTimeString(
+                        "de-DE"
+                      )
+                    }
+                  </strong>
 
-  } else {
+                  <br>
 
-    incidentList.innerHTML =
-      teacherIncidents.map(i => {
+                  ${esc(
+                    incident.description
+                  )}
 
-        const time =
-          new Date(
-            i.incident_time
-          ).toLocaleTimeString(
-            "de-DE",
-            {
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit"
-            }
-          );
+                </div>
+              `;
 
+            })
+            .join("")
 
-        return `
-
-          <div class="incident">
-
-            <strong>
-              ${time}
-            </strong>
-
-            <br>
-
-            ${escapeHTML(
-              i.description
-            )}
-
-          </div>
-
-        `;
-
-      }).join("");
-
-  }
+        : "<p>Keine Vorfälle für diesen Tag.</p>";
 
 }
 
 
-/* =====================================================
-   AUTOMATISCH AKTUALISIEREN
-   ===================================================== */
+/* =========================
+   ZEIT AKTUALISIEREN
+========================= */
 
-setInterval(() => {
+setInterval(
+  () => {
 
-  if (
-    currentUser &&
-    currentUser.role === "teacher"
-  ) {
+    if (
+      currentUser &&
+      currentUser.role === "teacher"
+    ) {
 
-    render();
+      render();
 
-  }
+    }
 
-}, 1000);
+  },
+  1000
+);
 
 
-/* =====================================================
-   BEIM LADEN VORHANDENE SITZUNG PRÜFEN
-   ===================================================== */
+/* =========================
+   AUTOMATISCH EINLOGGEN
+========================= */
 
-(async function init() {
+(async function() {
 
   const {
     data: {
       session
     }
   } =
-    await supabaseClient.auth.getSession();
+    await supabaseClient
+      .auth
+      .getSession();
 
 
   if (session) {
 
-    await loadCurrentUser();
+    await loadUser();
+
 
     if (currentUser) {
 
-      openApp();
+      await openApp();
 
     }
 
@@ -1798,3 +2578,6 @@ setInterval(() => {
 })();
 
 </script>
+
+</body>
+   </html>
