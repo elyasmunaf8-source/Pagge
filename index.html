@@ -928,42 +928,35 @@ function tripClass(minutes) {
 
 async function authCall(body) {
 
-  const response =
-    await fetch(
-      FUNCTION_URL,
-      {
-        method: "POST",
+  const {
+    data,
+    error
+  } = await supabaseClient.functions.invoke(
+    "dynamic-processor",
+    {
+      body: body
+    }
+  );
 
-        headers: {
-          "Content-Type":
-            "application/json",
-
-          "apikey":
-            SUPABASE_PUBLISHABLE_KEY
-        },
-
-        body:
-          JSON.stringify(body)
-      }
-    );
-
-
-  const data =
-    await response.json();
-
-
-  if (!response.ok) {
-
+  if (error) {
+    console.error("Edge-Function-Fehler:", error);
     throw new Error(
-      data.error ||
-      "Anfrage fehlgeschlagen."
+      error.message ||
+      "Verbindung zum Server fehlgeschlagen."
     );
-
   }
 
+  if (!data) {
+    throw new Error(
+      "Keine Antwort vom Server erhalten."
+    );
+  }
+
+  if (data.error) {
+    throw new Error(data.error);
+  }
 
   return data;
-
 }
 
 
